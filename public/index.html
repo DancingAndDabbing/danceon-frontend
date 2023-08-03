@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+      />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+
+    <link rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.13.0/css/all.css">
+    <link rel="stylesheet" type="text/css" href="style/mystyles.css">
+
+    <title>danceOn</title>
+
+    <style>
+    body {
+      margin: 0;
+    }
+    /* #stats {
+      position: relative;
+      width: 100%;
+      height: 80px;
+    } */
+    #main {
+      position: relative;
+    }
+    /* #main-video{
+      margin: 1rem 0;
+      text-align: end;
+    } */
+    .output_hide{
+      display:none !important;
+    }
+    #video,#output{
+      /* width: 100% !important;
+      min-height: 494px !important;
+      max-height: 600px !important; */
+    }
+
+    .canvas-wrapper{
+      width: 100%;
+      background-color: #f9f9f9;
+      /* height: 100% !important; */
+    }
+    #canvas-wrapper,
+    #scatter-gl-container {
+      position: relative;
+    }
+    @media screen and (min-width: 769px) and (max-width: 1200px) {
+      .canvas-wrapper{
+        width:100% !important;
+        height: 480px !important;
+      }
+      #camera_section{
+        display: flex;
+        justify-content: center;
+      }
+      #camera_output{
+        /* width: 100% !important; */
+        height: 480px !important;
+      }
+    }
+    @media screen and (min-width: 0px) and (max-width: 768px) {
+      .canvas-wrapper{
+        width:100% !important;
+        height: 480px !important;
+      }
+      #camera_output{
+        width:100% !important;
+      }
+    }
+  </style>
+  </head>
+	<body>
+		<noscript>You need to enable JavaScript to run this app.</noscript>
+		<div id="root"></div>
+  	</body>
+</html>
