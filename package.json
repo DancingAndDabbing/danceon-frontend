@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@mediapipe/pose": "^0.5.1675469404",
     "@tensorflow-models/pose-detection": "^2.1.0",
     "@tensorflow/tfjs": "^4.5.0",
+    "@tensorflow/tfjs-backend-wasm": "^4.10.0",
     "@tensorflow/tfjs-backend-webgl": "^4.5.0",
+    "@tensorflow/tfjs-backend-webgpu": "^4.10.0",
     "@tensorflow/tfjs-converter": "^4.5.0",
     "@tensorflow/tfjs-core": "^4.5.0",
     "@testing-library/jest-dom": "^5.16.5",
@@ -61,7 +64,7 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {
-    "@types/styled-components": "^5.1.26"
+  "engines": {
+    "node": "16.16.0"
   }
 }
