@@ -40,7 +40,7 @@ class CameraCanvas extends Component<any, any> {
 		this.cursorPosition = {x: 0, y: 0}
 		this.videoWidth = props.width
 		this.videoHeight = props.height
-
+		this.draw.updateDrawDimension(this.videoWidth, this.videoHeight, false)
 		if (getCacheItem(CacheTypes.FlipCamera) != 'false') {
 			//first time dont call
 			this.flip()

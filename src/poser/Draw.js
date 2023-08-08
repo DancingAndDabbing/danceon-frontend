@@ -39,17 +39,19 @@ export class Draw {
 		this.isFlip = this.isCamera ? (getCacheItem(CacheTypes.FlipCamera) == 'false' ? false : true) : false
 	}
 
-	updateDrawDimension(width, height) {
+	updateDrawDimension(width, height, isVideo = true) {
 		window.width = width
 		window.height = height
-		this.ctx.canvas.width = width
-		this.ctx.canvas.height = height
-		this.originWidth = this.isCamera ? this.ctx.canvas.width : null
-		this.centerX = this.ctx.canvas.width / 2
-		this.centerY = this.ctx.canvas.height / 2
-		const rect = this.ctx.canvas.getBoundingClientRect()
-		this.videoWidth = rect.width
-		this.videoHeight = rect.height
+		if (isVideo) {
+			this.ctx.canvas.width = width
+			this.ctx.canvas.height = height
+			this.originWidth = this.isCamera ? this.ctx.canvas.width : null
+			this.centerX = this.ctx.canvas.width / 2
+			this.centerY = this.ctx.canvas.height / 2
+			const rect = this.ctx.canvas.getBoundingClientRect()
+			this.videoWidth = rect.width
+			this.videoHeight = rect.height
+		}
 	}
 
 	drawCursor(x, y, isCursor, pose) {
