@@ -100,10 +100,12 @@ class Video extends Component {
 			cancelAnimationFrame(this.messageAnimationFrameId)
 			this.progressBarRef.value = 0
 			this.handleVideoEnded() //stop previous video
+			file = null
 			this.videoCanvas.ctx.canvas.removeEventListener('mousemove', this.handleMouseMove)
 			this.videoCanvas.video.removeEventListener('ended', this.handleVideoEnded)
 			if (this.videoCanvas) {
 				this.videoCanvas.clearCtx()
+				this.videoCanvas.video.style.visibility = 'hidden'
 				this.videoCanvas = null
 			}
 			if (this.detector) {
@@ -128,18 +130,20 @@ class Video extends Component {
 			this.isPreparing = false
 			this.detector = await poseDetection.createDetector(this.props.supportedModel, {runtime: 'tfjs', modelType: this.props.modelType})
 			this.props.cameraSetupCB()
-			if (file) {
-				this.setVideoOnCanvas()
-			} else {
-				this.message = 'Upload video'
+			if (!file) {
+				file = 'default'
+				this.videoCanvas.source.src = '/assets/SFD_Nov.mp4'
 			}
+			this.setVideoOnCanvas(false)
 		} catch (e) {
 			console.log(e)
 		}
 	}
 
-	setVideoOnCanvas = async () => {
-		this.videoCanvas.source.src = URL.createObjectURL(file)
+	setVideoOnCanvas = async (isUploaded = true) => {
+		if (isUploaded) {
+			this.videoCanvas.source.src = URL.createObjectURL(file)
+		}
 		this.videoCanvas.video.load()
 		await new Promise((resolve) => {
 			this.videoCanvas.video.onloadeddata = (video) => {
@@ -242,7 +246,7 @@ class Video extends Component {
 		document.querySelector('#recordingNotifier').classList.add('hide')
 		document.querySelector('#top-bar').classList.remove('hide')
 		this.progressBarRef.value = 100
-		//if user switch window or browser and meantime vidoe is finished this function
+		//if user switch window or browser and meantime video is finished this function
 		//is invokved and ui does not updated as it was paused somehow so we just set  slider vaule to 100
 	}
 
