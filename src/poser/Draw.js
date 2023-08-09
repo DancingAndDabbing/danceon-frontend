@@ -7,6 +7,7 @@ import {
 	DEFAULT_DIAMETER,
 	DEFAULT_LINE_HEIGHT,
 	DEFAULT_RADIUS,
+	INVISIBLE_COLOR,
 	SHAPES,
 	returnCondition,
 	splitArgs,
@@ -396,7 +397,7 @@ export class Draw {
 		let {_x, _y} = convertOrigin(x, y, this.ctx.canvas.height, this.isFlip ? this.originWidth : null)
 
 		this.ctx.fillStyle = fallbackToDefault(targetPose.how.fill, 'White')
-		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, 'White')
+		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, INVISIBLE_COLOR)
 		this.ctx.lineWidth = fallbackToDefault(targetPose.how.strokeWeight, DEFAULT_LINE_WIDTH)
 
 		const circle = new Path2D()
@@ -420,7 +421,7 @@ export class Draw {
 		circle.arc(_x, _y, r, start, stop)
 
 		this.ctx.fillStyle = fallbackToDefault(targetPose.how.fill, 'White')
-		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, 'White')
+		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, INVISIBLE_COLOR)
 		this.ctx.lineWidth = fallbackToDefault(targetPose.how.strokeWeight, DEFAULT_LINE_WIDTH)
 
 		this.ctx.fill(circle)
@@ -435,7 +436,7 @@ export class Draw {
 		let {_x, _y} = convertOrigin(x, y, this.ctx.canvas.height, this.isFlip ? this.originWidth : null)
 
 		this.ctx.fillStyle = fallbackToDefault(targetPose.how.fill, 'White')
-		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, 'White')
+		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, INVISIBLE_COLOR)
 		this.ctx.lineWidth = fallbackToDefault(targetPose.how.strokeWeight, 2)
 
 		const ellips = new Path2D()
@@ -453,7 +454,7 @@ export class Draw {
 		let {_x: _x2, _y: _y2} = convertOrigin(x2, y2, this.ctx.canvas.height, this.isFlip ? this.originWidth : null)
 
 		this.ctx.fillStyle = fallbackToDefault(targetPose.how.fill, 'White')
-		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, 'White')
+		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, INVISIBLE_COLOR)
 		this.ctx.lineWidth = fallbackToDefault(targetPose.how.strokeWeight, DEFAULT_LINE_WIDTH)
 
 		const line = new Path2D()
@@ -465,7 +466,7 @@ export class Draw {
 
 	drawPoint(targetPose) {
 		this.ctx.fillStyle = fallbackToDefault(targetPose.how.fill, 'White')
-		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, 'White')
+		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, INVISIBLE_COLOR)
 		this.ctx.lineWidth = fallbackToDefault(targetPose.how.strokeWeight, DEFAULT_LINE_WIDTH)
 
 		let x = fallbackToDefault(targetPose.where.x, randomIntFromInterval(0, this.ctx.canvas.width))
@@ -498,7 +499,7 @@ export class Draw {
 		let {_x: _x4, _y: _y4} = convertOrigin(x4, y4, this.ctx.canvas.height, this.isFlip ? this.originWidth : null)
 
 		this.ctx.fillStyle = fallbackToDefault(targetPose.how.fill, 'White')
-		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, 'White')
+		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, INVISIBLE_COLOR)
 		this.ctx.lineWidth = fallbackToDefault(targetPose.how.strokeWeight, DEFAULT_LINE_WIDTH)
 
 		const quad = new Path2D()
@@ -521,7 +522,7 @@ export class Draw {
 		let {_x, _y} = convertOrigin(x, y, this.ctx.canvas.height, this.originWidth)
 
 		this.ctx.fillStyle = fallbackToDefault(targetPose.how.fill, 'White')
-		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, 'White')
+		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, INVISIBLE_COLOR)
 		this.ctx.lineWidth = fallbackToDefault(targetPose.how.strokeWeight, DEFAULT_LINE_WIDTH)
 
 		const rect = new Path2D()
@@ -541,7 +542,7 @@ export class Draw {
 		let {_x, _y} = convertOrigin(x, y, this.ctx.canvas.height, this.isFlip ? this.originWidth : null)
 
 		this.ctx.fillStyle = fallbackToDefault(targetPose.how.fill, 'White')
-		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, 'White')
+		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, INVISIBLE_COLOR)
 		this.ctx.lineWidth = fallbackToDefault(targetPose.how.strokeWeight, DEFAULT_LINE_WIDTH)
 
 		const rect = new Path2D()
@@ -566,7 +567,7 @@ export class Draw {
 		let {_x: _x3, _y: _y3} = convertOrigin(x3, y3, this.ctx.canvas.height, this.isFlip ? this.originWidth : null)
 
 		this.ctx.fillStyle = fallbackToDefault(targetPose.how.fill, 'White')
-		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, 'White')
+		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, INVISIBLE_COLOR)
 		this.ctx.lineWidth = fallbackToDefault(targetPose.how.strokeWeight, DEFAULT_LINE_WIDTH)
 
 		const triangle = new Path2D()
@@ -581,7 +582,7 @@ export class Draw {
 
 	drawCurve(targetPose) {
 		this.ctx.fillStyle = fallbackToDefault(targetPose.how.fill, 'White')
-		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, 'White')
+		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, INVISIBLE_COLOR)
 		this.ctx.lineWidth = fallbackToDefault(targetPose.how.strokeWeight, DEFAULT_LINE_WIDTH)
 
 		const vertices = this.generateVertices(targetPose)
@@ -656,7 +657,7 @@ export class Draw {
 		let {_x: _x4, _y: _y4} = convertOrigin(x4, y4, this.ctx.canvas.height, this.isFlip ? this.originWidth : null)
 
 		this.ctx.fillStyle = fallbackToDefault(targetPose.how.fill, 'White')
-		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, 'White')
+		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, INVISIBLE_COLOR)
 		this.ctx.lineWidth = fallbackToDefault(targetPose.how.strokeWeight, DEFAULT_LINE_WIDTH)
 
 		const curve = new Path2D()

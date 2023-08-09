@@ -3,6 +3,8 @@
  */
 
 //variables
+export const INVISIBLE_COLOR = 'rgba(255, 255, 255, 0)'
+
 export const DEFAULT_LINE_WIDTH = 2
 
 export const DEFAULT_LINE_HEIGHT = 100

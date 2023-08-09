@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {loginUser, saveSingleExample, saveUserExamples} from '../../actions/authActions'
+import {loginUser, saveAllExamples, saveSingleExample, saveUserExamples} from '../../actions/authActions'
 
 import Loader from '../components/Loader'
 import {CacheTypes, getCacheItem, setCacheItem} from '../../utils/LocalStorage'
@@ -62,6 +62,7 @@ class ExampleFormModel extends Component {
 				this.props.closeModal(true)
 				this.props.dispatch(saveSingleExample(response))
 				this.props.dispatch(saveUserExamples({examples: [...this.props.userExamples.examples, response], totalRecords: this.props.userExamples.totalRecords, page: this.props.userExamples.page}))
+				this.props.dispatch(saveAllExamples({examples: [...this.props.allExamples.examples, response], totalRecords: this.props.allExamples.totalRecords, page: this.props.allExamples.page}))
 			} else {
 				this.setState({loading: false, titleError: this.state.title ? false : true})
 			}
@@ -80,7 +81,12 @@ class ExampleFormModel extends Component {
 				return example._id !== this.state.exampleId && example.title
 			})
 
+			let updatedAllExample = this.props.allExamples.examples.filter((example) => {
+				return example._id !== this.state.exampleId && example.title
+			})
+
 			this.props.dispatch(saveUserExamples({examples: updatedExample, totalRecords: this.props.userExamples.totalRecords - 1 > 0 ? this.props.userExamples.totalRecords - 1 : 0, page: this.props.userExamples.page}))
+			this.props.dispatch(saveAllExamples({examples: updatedAllExample, totalRecords: this.props.allExamples.totalRecords - 1 > 0 ? this.props.allExamples.totalRecords - 1 : 0, page: this.props.allExamples.page}))
 			this.props.closeModal()
 		}
 	}
@@ -105,6 +111,7 @@ class ExampleFormModel extends Component {
 				})
 				this.props.editorRef.current.setExampleCodeOnEditor(response.examples)
 				this.props.dispatch(saveUserExamples({examples: updatedExample, totalRecords: this.props.userExamples.totalRecords, page: this.props.userExamples.page}))
+				this.props.dispatch(saveAllExamples({examples: updatedExample, totalRecords: this.props.allExamples.totalRecords, page: this.props.allExamples.page}))
 				this.props.closeModal(true)
 			} else {
 				this.setState({loading: false, titleError: this.state.title ? false : true})
@@ -236,7 +243,8 @@ const mapStateToProps = (state) => {
 	return {
 		login: state.auth.login,
 		singleExample: state.auth.singleExample,
-		userExamples: state.auth.userExamples
+		userExamples: state.auth.userExamples,
+		allExamples: state.auth.allExamples
 	}
 }
 
