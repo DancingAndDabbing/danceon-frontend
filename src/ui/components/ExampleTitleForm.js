@@ -6,6 +6,7 @@ import {loginUser, saveAllExamples, saveSingleExample, saveUserExamples} from '.
 import {CacheTypes, getCacheItem, setCacheItem} from '../../utils/LocalStorage'
 import ExampleFormModel from '../modals/ExampleFormModel'
 import {doDeleteExamples, doGetExampleById} from '../../apis'
+import ConfirmationModel from '../modals/ConfirmationModel'
 
 class ExampleTitleForm extends Component {
 	constructor(props) {
@@ -18,7 +19,8 @@ class ExampleTitleForm extends Component {
 			exampleId: '',
 			loading: false,
 			exampleDetails: {},
-			openModel: false
+			openModel: false,
+			deleteExampleModel: false
 		}
 	}
 
@@ -46,7 +48,7 @@ class ExampleTitleForm extends Component {
 			await doDeleteExamples(this.state.exampleId)
 
 			this.props.dispatch(saveSingleExample({}))
-			this.setState({title: '', loading: false})
+
 			let updatedExample = this.props.userExamples.examples.filter((example) => {
 				return example._id !== this.state.exampleId && example.title
 			})
@@ -57,13 +59,13 @@ class ExampleTitleForm extends Component {
 
 			this.props.dispatch(saveUserExamples({examples: updatedExample, totalRecords: this.props.userExamples.totalRecords - 1 > 0 ? this.props.userExamples.totalRecords - 1 : 0, page: this.props.userExamples.page}))
 			this.props.dispatch(saveAllExamples({examples: updatedAllExample, totalRecords: this.props.allExamples.totalRecords - 1 > 0 ? this.props.allExamples.totalRecords - 1 : 0, page: this.props.allExamples.page}))
-
+			this.setState({title: '', loading: false, deleteExampleModel: false})
 			// this.props.dispatch(saveUserExamples({examples: updatedExample, totalRecords: this.props.userExamples.totalRecords - 1 > 0 ? this.props.userExamples.totalRecords - 1 : 0, page: this.props.userExamples.page}))
 		}
 	}
 
 	render() {
-		const {loading, exampleDetails} = this.state
+		const {loading, exampleDetails, deleteExampleModel} = this.state
 		return this.props.login ? (
 			<div className="field is-grouped top_ui_gap">
 				<Loader loading={loading} />
@@ -82,7 +84,7 @@ class ExampleTitleForm extends Component {
 					</div>
 					{exampleDetails.title && JSON.parse(getCacheItem(CacheTypes.UserData)).admin ? (
 						<div className="">
-							<button className="button is-link is-light" onClick={this.handleDeleteExample}>
+							<button className="button is-link is-light" onClick={() => this.setState({deleteExampleModel: true})}>
 								Delete
 							</button>
 						</div>
@@ -90,7 +92,7 @@ class ExampleTitleForm extends Component {
 						exampleDetails.title &&
 						exampleDetails.userId === JSON.parse(getCacheItem(CacheTypes.UserData)).id && (
 							<div className="">
-								<button className="button is-link is-light" onClick={this.handleDeleteExample}>
+								<button className="button is-link is-light" onClick={() => this.setState({deleteExampleModel: true})}>
 									Delete
 								</button>
 							</div>
@@ -109,6 +111,9 @@ class ExampleTitleForm extends Component {
 						videoRef={this.props.videoRef}
 						title={this.state.title}
 					/>
+				)}
+				{deleteExampleModel && (
+					<ConfirmationModel closeModal={() => this.setState({deleteExampleModel: false})} title={'Delete Example ?'} body={'Are you sure you want to delete this example ?'} onDelete={this.handleDeleteExample} deleteModel={true} />
 				)}
 			</div>
 		) : null

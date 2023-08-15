@@ -114,6 +114,11 @@ class ControlsModal extends Component {
 													onClick={() => {
 														this.switchCameraVideo()
 													}}
+													onKeyDown={(e) => {
+														if (e.key == 'Enter') {
+															e.preventDefault()
+														}
+													}}
 													className={`button ${this.props.isVideo && 'is-link'}`}>
 													Video
 												</button>
@@ -121,6 +126,11 @@ class ControlsModal extends Component {
 													id="webcamToggle"
 													onClick={() => {
 														this.switchCameraVideo()
+													}}
+													onKeyDown={(e) => {
+														if (e.key == 'Enter') {
+															e.preventDefault()
+														}
 													}}
 													className={`button ${!this.props.isVideo && 'is-link'}`}>
 													Webcam

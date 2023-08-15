@@ -40,7 +40,9 @@ export class Draw {
 		this.isFlip = this.isCamera ? (getCacheItem(CacheTypes.FlipCamera) == 'false' ? false : true) : false
 	}
 
-	updateDrawDimension(width, height, isVideo = true) {
+	updateDrawDimension(width, height, videoWidth = 0, videoHeight = 0, isVideo = true) {
+		width = parseFloat(width.toFixed(0))
+		height = parseFloat(height.toFixed(0))
 		window.width = width
 		window.height = height
 		if (isVideo) {
@@ -49,13 +51,14 @@ export class Draw {
 			this.originWidth = this.isCamera ? this.ctx.canvas.width : null
 			this.centerX = this.ctx.canvas.width / 2
 			this.centerY = this.ctx.canvas.height / 2
-			const rect = this.ctx.canvas.getBoundingClientRect()
-			this.videoWidth = rect.width
-			this.videoHeight = rect.height
+			// const rect = this.ctx.canvas.getBoundingClientRect()
+			this.videoWidth = videoWidth //parseFloat(rect.width.toFixed(0))
+			this.videoHeight = videoHeight //parseFloat(rect.height.toFixed(0))
 		}
 	}
 
 	drawCursor(x, y, isCursor, pose) {
+		window.lastPose = pose
 		if (this.isCamera) {
 			if (isCursor) {
 				let w = 40
@@ -119,40 +122,42 @@ export class Draw {
 						this.ctx.textAlign = 'left'
 						this.ctx.textBaseline = 'middle'
 						const name = p.name.includes('left') ? p.name.replace('left', 'right') : p.name.replace('right', 'left')
-						this.ctx.fillText(name, sx, sy + 20)
+						const _yThreshold = isCursor ? 34 : 20
+						this.ctx.fillText(name, sx, sy + _yThreshold)
 					}
 				})
 			}
 			this.ctx.restore()
 		} else {
 			if (isCursor) {
-				let w = this.videoWidth > this.videoHeight ? 100 : 240
+				let videoRatio = this.ctx.canvas.width / this.videoWidth
+				if (videoRatio >= 2) {
+					videoRatio = 1.7
+				} else {
+					videoRatio = 0.6
+				}
+				let w = 140 * videoRatio
 				let h = w / 2
 
+				console.log(videoRatio, this.videoWidth, this.ctx.canvas.width, '_', this.videoHeight, this.ctx.canvas.height)
 				let _x = (this.ctx.canvas.width / this.videoWidth) * x
 				_x = parseFloat(_x.toFixed(0))
 
 				let _y = (this.ctx.canvas.height / this.videoHeight) * y
 				_y = parseFloat(_y.toFixed(0))
 
-				let {_x: x2, _y: y2} = convertOrigin(_x, _y, this.ctx.canvas.height, this.isFlip ? this.originWidth : null)
+				let {_x: x2, _y: y2} = convertCursorOrigin(_x, _y, this.ctx.canvas.height, this.originWidth)
 
 				this.ctx.fillStyle = 'rgba(30, 30, 30, 0.5)'
 				this.ctx.strokeStyle = 'rgba(30, 30, 30, 0.5)'
 				this.ctx.lineWidth = DEFAULT_LINE_WIDTH
 
 				const rect = new Path2D()
-				if (this.videoWidth < this.videoHeight) {
-					//potrait
-					rect.rect(constrain(x2, 0, this.ctx.canvas.width - w), constrain(this.ctx.canvas.height - y2, 0, this.ctx.canvas.height - 160), w, h)
-				} else {
-					//landscape
-					rect.rect(constrain(x2, 0, this.ctx.canvas.width - w), constrain(this.ctx.canvas.height - y2, 30, this.ctx.canvas.height - 60), w, h)
-				}
+				rect.rect(constrain(x2, 0, this.ctx.canvas.width - w), constrain(this.ctx.canvas.height - y2, 0, this.ctx.canvas.height - 160), w, h)
 				this.ctx.fill(rect)
 
 				this.ctx.fillStyle = 'white'
-				this.ctx.font = '56px Arial'
+				this.ctx.font = `${32 * videoRatio + 'px Arial'}`
 				this.ctx.textAlign = 'left'
 				this.ctx.textBaseline = 'middle'
 
@@ -179,7 +184,8 @@ export class Draw {
 						this.ctx.textAlign = 'left'
 						this.ctx.textBaseline = 'middle'
 						const name = p.name //.includes('left') ? p.name.replace('left', 'right') : p.name.replace('right', 'left')
-						this.ctx.fillText(name, sx, sy + 20)
+						const _yThreshold = isCursor ? 34 : 20
+						this.ctx.fillText(name, sx, sy + _yThreshold)
 					}
 				})
 			}

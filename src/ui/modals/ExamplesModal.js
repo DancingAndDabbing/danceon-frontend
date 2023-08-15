@@ -11,6 +11,7 @@ import {doAutoLogin, doGetAllExamples, doGetMyExamples, doGetSearchAllExamples, 
 import Loader from '../components/Loader'
 import {loginUser, saveUserExamples, saveAllExamples, saveSingleExample} from '../../actions/authActions'
 import {CacheTypes, getCacheItem, removeCacheItem, setCacheItem} from '../../utils/LocalStorage'
+import ConfirmationModel from './ConfirmationModel'
 
 class ExamplesModal extends Component {
 	constructor(props) {
@@ -25,7 +26,9 @@ class ExamplesModal extends Component {
 			loading: false,
 			activeTab: 0,
 			totalExamples: 0,
-			page: 1
+			page: 1,
+			confirmationModel: false,
+			saveSelectedExample: {}
 		}
 	}
 
@@ -180,7 +183,7 @@ class ExamplesModal extends Component {
 	}
 
 	render() {
-		const {examples, searchQuery, loading, myExamples, activeTab} = this.state
+		const {examples, searchQuery, loading, myExamples, activeTab, saveSelectedExample, confirmationModel} = this.state
 		let totalExamples = activeTab == 0 ? myExamples : activeTab == 1 && examples
 
 		if (this.state.totalExamples == 0) {
@@ -286,8 +289,7 @@ class ExamplesModal extends Component {
 															<div
 																className=""
 																onClick={() => {
-																	this.props.saveSingleExample(res)
-																	this.closeModal()
+																	this.setState({saveSelectedExample: res, confirmationModel: true})
 																}}
 																style={{cursor: 'pointer'}}>
 																<a href={`#`}>
@@ -346,6 +348,19 @@ class ExamplesModal extends Component {
 							}
 							this.setState({openSignUpModal: false})
 						}}
+					/>
+				)}
+
+				{confirmationModel && (
+					<ConfirmationModel
+						closeModal={() => this.setState({confirmationModel: false, saveSelectedExample: {}})}
+						title={'Overwrite ?'}
+						body={'Are you sure you want to overwrite editor code with this example ?'}
+						onContinue={() => {
+							this.props.saveSingleExample(saveSelectedExample)
+							this.closeModal()
+						}}
+						overwriteModel={true}
 					/>
 				)}
 			</>

@@ -14,8 +14,8 @@ export class VideoCanvas {
 		this.video = document.getElementById('video')
 		this.canvas = document.getElementById('video_output')
 		//fix for ui
-		this.canvas.width = 640
-		this.canvas.height = 480
+		// this.canvas.width = 640
+		// this.canvas.height = 480
 		this.source = document.getElementById('currentVID')
 		this.ctx = this.canvas.getContext('2d')
 		this.draw = new Draw(this.ctx, false)
@@ -23,7 +23,7 @@ export class VideoCanvas {
 		this.recordVideo = false
 		this.skeleton = getCacheItem(CacheTypes.Skeleton) == 'true' ? true : false
 		this.cursor = getCacheItem(CacheTypes.Cursor) == 'true' ? true : false
-		this.cursorPosition = {x: 0, y: 0}
+		this.cursorPosition = {x: -1, y: -1}
 		const stream = this.canvas.captureStream()
 		const options = {mimeType: 'video/webm; codecs=vp9'}
 		this.mediaRecorder = new MediaRecorder(stream, options)
@@ -45,8 +45,8 @@ export class VideoCanvas {
 		}
 	}
 
-	updateDrawDimension(width, height) {
-		this.draw.updateDrawDimension(width, height)
+	updateDrawDimension(width, height, videoWidth, videoHeight) {
+		this.draw.updateDrawDimension(width, height, videoWidth, videoHeight)
 	}
 
 	drawLoadingMessage(message, isLoop) {
@@ -69,12 +69,26 @@ export class VideoCanvas {
 	 */
 	drawResult(pose) {
 		if (pose.keypoints != null) {
-			this.drawKeypoints(pose.keypoints)
-			this.drawSkeleton(pose.keypoints)
-			this.draw.drawShapes(this.poser, pose.keypoints)
-			if (this.cursor == true || this.skeleton == true /*&& this.cursorPosition.x && this.cursorPosition.y*/) {
-				this.draw.drawCursor(this.cursorPosition.x, this.cursorPosition.y, this.cursor, this.skeleton ? pose : null)
+			if (this.skeleton) {
+				this.drawKeypoints(pose.keypoints)
+				this.drawSkeleton(pose.keypoints)
 			}
+			this.draw.drawShapes(this.poser, pose.keypoints)
+			this.drawCursor(this.skeleton ? pose : null, false, null)
+		}
+	}
+
+	drawCursor(pose, isClearCtx, lastFrame) {
+		if (isClearCtx) {
+			this.clearCtx(false)
+		}
+		if (lastFrame) {
+			const savedImage = new Image()
+			savedImage.src = lastFrame
+			this.ctx.drawImage(savedImage, 0, 0, this.video.videoWidth, this.video.videoHeight)
+		}
+		if ((this.cursor == true || this.skeleton == true) && this.cursorPosition.x >= 0 && this.cursorPosition.y >= 0) {
+			this.draw.drawCursor(this.cursorPosition.x, this.cursorPosition.y, this.cursor, pose)
 		}
 	}
 

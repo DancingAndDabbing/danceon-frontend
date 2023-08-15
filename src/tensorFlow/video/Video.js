@@ -17,6 +17,8 @@ import {VideoCanvas} from './VideoCanvas'
 tfjsWasm.setWasmPaths(`https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@${tfjsWasm.version_wasm}/dist/`)
 
 let file = null
+let lastFrame = null //to show cursor position in case video is pause
+
 class Video extends Component {
 	constructor(props) {
 		super(props)
@@ -89,6 +91,7 @@ class Video extends Component {
 
 		this.setUpVideoPoseDetection()
 		this.videoCanvas.ctx.canvas.addEventListener('mousemove', this.handleMouseMove)
+		this.videoCanvas.ctx.canvas.addEventListener('mouseout', this.handleMouseOut)
 		if (this.props.videoEvent) {
 			this.uploadVideo(this.props.videoEvent)
 		}
@@ -101,6 +104,7 @@ class Video extends Component {
 			this.progressBarRef.value = 0
 			this.handleVideoEnded() //stop previous video
 			file = null
+			this.videoCanvas.ctx.canvas.removeEventListener('mouseout', this.handleMouseOut)
 			this.videoCanvas.ctx.canvas.removeEventListener('mousemove', this.handleMouseMove)
 			this.videoCanvas.video.removeEventListener('ended', this.handleVideoEnded)
 			if (this.videoCanvas) {
@@ -119,10 +123,19 @@ class Video extends Component {
 	}
 
 	handleMouseMove = (event) => {
-		if (!this.videoCanvas.ctx) {
+		if (!this.videoCanvas.ctx || this.isPreparing) {
 			return
 		}
 		this.videoCanvas.cursorPosition = {x: event.offsetX, y: event.offsetY}
+		if (!this.isPreparing && this.videoCanvas.video.paused) {
+			this.videoCanvas.drawCursor(window.lastPose, true, lastFrame)
+		}
+	}
+
+	handleMouseOut = (event) => {
+		if (this.videoCanvas) {
+			this.videoCanvas.cursorPosition = {x: -1, y: -1}
+		}
 	}
 
 	setUpVideoPoseDetection = async () => {
@@ -157,14 +170,22 @@ class Video extends Component {
 		this.videoCanvas.video.height = videoHeight
 		this.videoCanvas.canvas.width = videoWidth
 		this.videoCanvas.canvas.height = videoHeight
-		this.videoCanvas.updateDrawDimension(videoWidth, videoHeight)
-		// if (videoHeight > videoWidth) {
-		// 	document.querySelector('.canvas-wrapper').style.width = '329px'
-		// 	document.querySelector('.canvas-wrapper').style.height = '100%'
-		// } else {
-		// 	document.querySelector('.canvas-wrapper').style.width = '640px'
-		// 	document.querySelector('.canvas-wrapper').style.height = '360px'
-		// }
+
+		const canvasContainer = document.querySelector('.canvas-wrapper')
+		let _videoHeight = 1
+		let _videoWidth = 300
+		if (videoHeight > videoWidth) {
+			_videoHeight = videoHeight / videoWidth
+			_videoHeight = _videoHeight * _videoWidth
+			canvasContainer.style = `width: ${_videoWidth}px; height: ${_videoHeight}px`
+		} else {
+			_videoWidth = 600
+			_videoHeight = videoWidth / videoHeight
+			_videoHeight = _videoWidth / _videoHeight
+			canvasContainer.style = `width: ${_videoWidth}px; height: ${_videoHeight}px`
+		}
+		this.videoCanvas.updateDrawDimension(videoWidth, videoHeight, _videoWidth, _videoHeight)
+
 		this.videoCanvas.video.style.visibility = 'visible'
 		cancelAnimationFrame(this.messageAnimationFrameId)
 		this.videoCanvas.clearCtx(false)
@@ -215,6 +236,7 @@ class Video extends Component {
 					this.onUpdatePoser(this.previousPoser)
 				}
 			} else if (this.videoCanvas.mediaRecorder.state === 'recording') {
+				lastFrame = this.videoCanvas.ctx.canvas.toDataURL('image/png')
 				this.videoCanvas.updatePauseStatus(true)
 				this.playButtonRef.classList.add('fa-play')
 				this.playButtonRef.classList.remove('fa-pause')

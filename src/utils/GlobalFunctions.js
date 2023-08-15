@@ -7,6 +7,7 @@
 window.width = 0
 window.height = 0
 window._allPoses = null
+window.lastPose = null
 
 window.PI = Math.PI
 window.HALF_PI = Math.PI / 2

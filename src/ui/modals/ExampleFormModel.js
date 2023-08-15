@@ -5,6 +5,7 @@ import {loginUser, saveAllExamples, saveSingleExample, saveUserExamples} from '.
 import Loader from '../components/Loader'
 import {CacheTypes, getCacheItem, setCacheItem} from '../../utils/LocalStorage'
 import {doAddExamples, doDeleteExamples, doGetExampleById, doUpdateExampleById} from '../../apis'
+import ConfirmationModel from './ConfirmationModel'
 
 class ExampleFormModel extends Component {
 	constructor(props) {
@@ -19,7 +20,8 @@ class ExampleFormModel extends Component {
 			loading: false,
 			exampleDetails: {},
 			errorModel: false,
-			titleError: false
+			titleError: false,
+			deleteExampleModel: false
 		}
 	}
 
@@ -75,7 +77,7 @@ class ExampleFormModel extends Component {
 		if (this.state.exampleId) {
 			this.setState({loading: true})
 			await doDeleteExamples(this.state.exampleId)
-			this.setState({title: '', description: '', tag: 'Easy', loading: false})
+
 			this.props.dispatch(saveSingleExample({}))
 			let updatedExample = this.props.userExamples.examples.filter((example) => {
 				return example._id !== this.state.exampleId && example.title
@@ -88,6 +90,7 @@ class ExampleFormModel extends Component {
 			this.props.dispatch(saveUserExamples({examples: updatedExample, totalRecords: this.props.userExamples.totalRecords - 1 > 0 ? this.props.userExamples.totalRecords - 1 : 0, page: this.props.userExamples.page}))
 			this.props.dispatch(saveAllExamples({examples: updatedAllExample, totalRecords: this.props.allExamples.totalRecords - 1 > 0 ? this.props.allExamples.totalRecords - 1 : 0, page: this.props.allExamples.page}))
 			this.props.closeModal()
+			this.setState({title: '', description: '', tag: 'Easy', loading: false, deleteExampleModel: false})
 		}
 	}
 
@@ -122,7 +125,7 @@ class ExampleFormModel extends Component {
 	}
 
 	render() {
-		const {tag, loading, exampleDetails, titleError} = this.state
+		const {tag, loading, exampleDetails, titleError, deleteExampleModel} = this.state
 		return (
 			<>
 				<div className="modal is-active" id="egID">
@@ -205,7 +208,7 @@ class ExampleFormModel extends Component {
 									</div>
 									{exampleDetails.title && JSON.parse(getCacheItem(CacheTypes.UserData)).admin ? (
 										<div className="">
-											<button className="button is-link is-light" onClick={this.handleDeleteExample}>
+											<button className="button is-link is-light" onClick={() => this.setState({deleteExampleModel: true})}>
 												Delete
 											</button>
 										</div>
@@ -213,7 +216,7 @@ class ExampleFormModel extends Component {
 										exampleDetails.title &&
 										exampleDetails.userId === JSON.parse(getCacheItem(CacheTypes.UserData)).id && (
 											<div className="">
-												<button className="button is-link is-light" onClick={this.handleDeleteExample}>
+												<button className="button is-link is-light" onClick={() => this.setState({deleteExampleModel: true})}>
 													Delete
 												</button>
 											</div>
@@ -230,6 +233,16 @@ class ExampleFormModel extends Component {
 										</div>
 									</div>
 								)
+							)}
+
+							{deleteExampleModel && (
+								<ConfirmationModel
+									closeModal={() => this.setState({deleteExampleModel: false})}
+									title={'Delete Example ?'}
+									body={'Are you sure you want to delete this example ?'}
+									onDelete={this.handleDeleteExample}
+									deleteModel={true}
+								/>
 							)}
 						</div>
 					</div>
