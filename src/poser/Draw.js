@@ -139,7 +139,6 @@ export class Draw {
 				let w = 140 * videoRatio
 				let h = w / 2
 
-				console.log(videoRatio, this.videoWidth, this.ctx.canvas.width, '_', this.videoHeight, this.ctx.canvas.height)
 				let _x = (this.ctx.canvas.width / this.videoWidth) * x
 				_x = parseFloat(_x.toFixed(0))
 
@@ -153,7 +152,7 @@ export class Draw {
 				this.ctx.lineWidth = DEFAULT_LINE_WIDTH
 
 				const rect = new Path2D()
-				rect.rect(constrain(x2, 0, this.ctx.canvas.width - w), constrain(this.ctx.canvas.height - y2, 0, this.ctx.canvas.height - 160), w, h)
+				rect.rect(constrain(x2, 0, this.ctx.canvas.width - w), constrain(this.ctx.canvas.height - y2, 0, this.ctx.canvas.height - 94 * videoRatio), w, h)
 				this.ctx.fill(rect)
 
 				this.ctx.fillStyle = 'white'
@@ -170,8 +169,8 @@ export class Draw {
 				const text = 'y:' + yText + '\nx:' + xText
 				const lines = text.split('\n')
 				lines.forEach((line, index) => {
-					const yConstrain = index == 1 ? this.ctx.canvas.height - 130 : this.ctx.canvas.height - 70
-					this.ctx.fillText(line, constrain(x2 + 20, 0, this.ctx.canvas.width - w), constrain(parseFloat(this.ctx.canvas.height - y2) + 80 - index * 60, 0, yConstrain))
+					const yConstrain = index == 1 ? this.ctx.canvas.height - 76 * videoRatio : this.ctx.canvas.height - 41 * videoRatio
+					this.ctx.fillText(line, constrain(x2 + 20, 0, this.ctx.canvas.width - w), constrain(parseFloat(this.ctx.canvas.height - y2) + 47 * videoRatio - index * 35 * videoRatio, 0, yConstrain))
 				})
 			}
 			if (pose) {

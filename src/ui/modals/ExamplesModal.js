@@ -41,15 +41,19 @@ class ExamplesModal extends Component {
 			this.getMyExamples(this.state.page + 1, false)
 		}
 
-		if (this.props.login === true && prevProps.login !== this.props.login && prevProps.userExamples.examples.length == 0 && this.props.userExamples.examples.length == 0) {
+		if (this.props.login === true && prevProps.login !== this.props.login && prevProps.userExamples.examples.length == 0 && this.props.userExamples.examples.length == 0 && this.state.activeTab == 0) {
 			this.getMyExamples()
 		}
 
-		if (prevState.activeTab != this.state.activeTab && this.state.activeTab == 0 && this.props.userExamples.examples.length && this.state.searchQuery.trim().length == 0) {
+		if (this.props.login === true && prevProps.login !== this.props.login && prevProps.allExamples.examples.length == 0 && this.props.allExamples.examples.length == 0 && this.state.activeTab == 1) {
+			this.getAllExamples()
+		}
+
+		if (prevState.activeTab != this.state.activeTab && this.state.activeTab == 0 && this.props.userExamples.examples.length && this.state.searchQuery.trim().length == 0 && this.props.login === true) {
 			this.setState({myExamples: this.props.userExamples.examples, totalExamples: this.props.userExamples.totalRecords ? this.props.userExamples.totalRecords : 0, page: this.props.userExamples.page ? this.props.userExamples.page : 1})
 		}
 
-		if (prevState.activeTab != this.state.activeTab && this.state.activeTab == 1 && this.props.allExamples.examples.length && this.state.searchQuery.trim().length == 0) {
+		if (prevState.activeTab != this.state.activeTab && this.state.activeTab == 1 && this.props.allExamples.examples.length && this.state.searchQuery.trim().length == 0 && this.props.login === true) {
 			this.setState({examples: this.props.allExamples.examples, totalExamples: this.props.allExamples.totalRecords ? this.props.allExamples.totalRecords : 0, page: this.props.allExamples.page ? this.props.allExamples.page : 1})
 		}
 	}
@@ -58,12 +62,14 @@ class ExamplesModal extends Component {
 		this.autoLogin()
 		if (this.props.userExamples.examples.length && this.state.activeTab == 0 && this.state.examples.length == 0) {
 			this.setState({myExamples: this.props.userExamples.examples, totalExamples: this.props.userExamples.totalRecords, page: this.props.userExamples.page})
-		} else if (this.props.userExamples.examples.length == 0 && this.state.activeTab == 0 && this.state.examples.length == 0) {
+		} else if (this.props.userExamples.examples.length == 0 && this.state.activeTab == 0 && this.state.myExamples.length == 0) {
 			this.getMyExamples()
 		}
 
 		if (this.props.allExamples.examples && this.state.examples.length == 0 && this.state.activeTab === 1) {
 			this.setState({examples: this.props.allExamples.examples, totalExamples: this.props.allExamples.totalRecords, page: this.props.allExamples.page})
+		} else if (this.props.allExamples.examples.length == 0 && this.state.activeTab == 0 && this.state.examples.length == 0) {
+			this.getAllExamples()
 		}
 	}
 
@@ -88,7 +94,7 @@ class ExamplesModal extends Component {
 	}
 
 	getAllExamples = async (page = 1, loading = true) => {
-		if (this.state.login === true) {
+		if (this.props.login === true) {
 			this.setState({loading: loading})
 			const response = await doGetAllExamples(page, this.state.examples.length)
 			if (response) {
@@ -99,8 +105,11 @@ class ExamplesModal extends Component {
 						return acc
 					}, {})
 				)
-				this.props.saveAllExamples({examples: uniqueExamples, totalRecords: response.remainingRecords, page: page})
-				this.setState({examples: uniqueExamples, totalExamples: response.remainingRecords, loading: false, page: page})
+				if (this.props.login === true) {
+					this.props.saveAllExamples({examples: uniqueExamples, totalRecords: response.remainingRecords, page: page})
+					this.setState({examples: uniqueExamples, totalExamples: response.remainingRecords, loading: false, page: page})
+				}
+				this.setState({loading: false})
 			} else {
 				this.setState({loading: false})
 			}
@@ -119,8 +128,11 @@ class ExamplesModal extends Component {
 						return acc
 					}, {})
 				)
-				this.props.saveUserExamples({examples: uniqueExamples, totalRecords: response.remainingRecords, page: page})
-				this.setState({myExamples: uniqueExamples, totalExamples: response.remainingRecords, loading: false, page: page})
+				if (this.props.login === true) {
+					this.props.saveUserExamples({examples: uniqueExamples, totalRecords: response.remainingRecords, page: page})
+					this.setState({myExamples: uniqueExamples, totalExamples: response.remainingRecords, loading: false, page: page})
+				}
+				this.setState({loading: false})
 			} else {
 				this.setState({loading: false})
 			}
@@ -137,7 +149,9 @@ class ExamplesModal extends Component {
 						return acc
 					}, {})
 				)
-				this.setState({examples: uniqueExamples, totalExamples: 0})
+				if (this.props.login === true) {
+					this.setState({examples: uniqueExamples, totalExamples: 0})
+				}
 			}
 		}
 	}
@@ -152,8 +166,9 @@ class ExamplesModal extends Component {
 						return acc
 					}, {})
 				)
-
-				this.setState({myExamples: uniqueExamples, totalExamples: 0})
+				if (this.props.login === true) {
+					this.setState({myExamples: uniqueExamples, totalExamples: 0})
+				}
 			} else {
 			}
 		}
@@ -209,12 +224,12 @@ class ExamplesModal extends Component {
 												id="auth-login"
 												data-target="login"
 												onClick={() => {
-													this.props.loginUser(false)
-													removeCacheItem(CacheTypes.UserData)
 													this.props.saveSingleExample({})
 													this.props.saveAllExamples({examples: [], page: 1})
 													this.props.saveUserExamples({examples: [], page: 1})
 													this.setState({examples: [], myExamples: [], login: false, page: 1, searchQuery: ''})
+													this.props.loginUser(false)
+													removeCacheItem(CacheTypes.UserData)
 												}}>
 												Logout
 											</button>
@@ -310,21 +325,21 @@ class ExamplesModal extends Component {
 								</div>
 
 								{/* {this.state.totalExamples != 0 && totalExamples.length && !loading && (
-									<div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-										<button
-											className="button is-link"
-											onClick={() => {
-												this.setState({page: this.state.page + 1})
-												if (this.state.activeTab === 0) {
-													this.getMyExamples(this.state.page + 1)
-												} else if (this.state.activeTab === 1) {
-													this.getAllExamples(this.state.page + 1)
-												}
-											}}>
-											Load More
-										</button>
-									</div>
-								)} */}
+									 <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+										 <button
+											 className="button is-link"
+											 onClick={() => {
+												 this.setState({page: this.state.page + 1})
+												 if (this.state.activeTab === 0) {
+													 this.getMyExamples(this.state.page + 1)
+												 } else if (this.state.activeTab === 1) {
+													 this.getAllExamples(this.state.page + 1)
+												 }
+											 }}>
+											 Load More
+										 </button>
+									 </div>
+								 )} */}
 								{totalExamples.length == 0 && !loading ? <div style={{whiteSpace: 'nowrap', textAlign: 'center'}}>no examples found</div> : ''}
 							</div>
 						</div>

@@ -85,8 +85,10 @@ class CameraCanvas extends Component<any, any> {
 	 */
 	drawResult(pose: any) {
 		if (pose.keypoints != null) {
-			this.drawKeypoints(pose.keypoints)
-			this.drawSkeleton(pose.keypoints, pose.id)
+			if (this.skeleton) {
+				this.drawKeypoints(pose.keypoints)
+				this.drawSkeleton(pose.keypoints, pose.id)
+			}
 			this.draw.drawShapes(this.poser, pose.keypoints)
 			if ((this.skeleton == true || this.cursor == true) && this.cursorPosition.x && this.cursorPosition.y) {
 				this.draw.drawCursor(this.cursorPosition.x, this.cursorPosition.y, this.cursor, this.skeleton ? pose : null)

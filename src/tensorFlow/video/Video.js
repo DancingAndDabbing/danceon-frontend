@@ -171,19 +171,18 @@ class Video extends Component {
 		this.videoCanvas.canvas.width = videoWidth
 		this.videoCanvas.canvas.height = videoHeight
 
-		const canvasContainer = document.querySelector('.canvas-wrapper')
 		let _videoHeight = 1
 		let _videoWidth = 300
 		if (videoHeight > videoWidth) {
 			_videoHeight = videoHeight / videoWidth
 			_videoHeight = _videoHeight * _videoWidth
-			canvasContainer.style = `width: ${_videoWidth}px; height: ${_videoHeight}px`
 		} else {
 			_videoWidth = 600
 			_videoHeight = videoWidth / videoHeight
 			_videoHeight = _videoWidth / _videoHeight
-			canvasContainer.style = `width: ${_videoWidth}px; height: ${_videoHeight}px`
 		}
+		const canvasContainer = document.querySelector('.canvas-wrapper')
+		canvasContainer.style = `width: ${_videoWidth}px; height: ${_videoHeight}px`
 		this.videoCanvas.updateDrawDimension(videoWidth, videoHeight, _videoWidth, _videoHeight)
 
 		this.videoCanvas.video.style.visibility = 'visible'
@@ -301,7 +300,7 @@ class Video extends Component {
 		++this.numInferences
 		const panelUpdateMilliseconds = 1000
 		if (endInferenceTime - this.lastPanelUpdate >= panelUpdateMilliseconds) {
-			const averageInferenceTime = this.inferenceTimeSum / this.numInferences
+			// const averageInferenceTime = this.inferenceTimeSum / this.numInferences
 			this.inferenceTimeSum = 0
 			this.numInferences = 0
 			// console.log('current fps is: ' + 1000.0 / averageInferenceTime, 120)
@@ -340,7 +339,7 @@ class Video extends Component {
 		if (this.videoCanvas.mediaRecorder.state === 'recording') {
 			this.props.openRecordingModal()
 		} else {
-			alert('show message in ui or do auto play')
+			alert('Please play video first')
 		}
 	}
 
