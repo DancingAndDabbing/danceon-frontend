@@ -2,15 +2,15 @@
  * it simply handle/renders examples modal/ui
  */
 
-import React, {Component} from 'react'
-import {connect} from 'react-redux'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
 import LoginModal from './LoginModal'
 import SignUpModal from './SignUpModal'
-import {doAutoLogin, doGetAllExamples, doGetMyExamples, doGetSearchAllExamples, doGetSearchMyExamples} from '../../apis'
+import { doAutoLogin, doGetAllExamples, doGetMyExamples, doGetSearchAllExamples, doGetSearchMyExamples } from '../../apis'
 import Loader from '../components/Loader'
-import {loginUser, saveUserExamples, saveAllExamples, saveSingleExample} from '../../actions/authActions'
-import {CacheTypes, getCacheItem, removeCacheItem, setCacheItem} from '../../utils/LocalStorage'
+import { loginUser, saveUserExamples, saveAllExamples, saveSingleExample } from '../../actions/authActions'
+import { CacheTypes, getCacheItem, removeCacheItem, setCacheItem } from '../../utils/LocalStorage'
 import ConfirmationModel from './ConfirmationModel'
 
 class ExamplesModal extends Component {
@@ -50,24 +50,24 @@ class ExamplesModal extends Component {
 		}
 
 		if (prevState.activeTab != this.state.activeTab && this.state.activeTab == 0 && this.props.userExamples.examples.length && this.state.searchQuery.trim().length == 0 && this.props.login === true) {
-			this.setState({myExamples: this.props.userExamples.examples, totalExamples: this.props.userExamples.totalRecords ? this.props.userExamples.totalRecords : 0, page: this.props.userExamples.page ? this.props.userExamples.page : 1})
+			this.setState({ myExamples: this.props.userExamples.examples, totalExamples: this.props.userExamples.totalRecords ? this.props.userExamples.totalRecords : 0, page: this.props.userExamples.page ? this.props.userExamples.page : 1 })
 		}
 
 		if (prevState.activeTab != this.state.activeTab && this.state.activeTab == 1 && this.props.allExamples.examples.length && this.state.searchQuery.trim().length == 0 && this.props.login === true) {
-			this.setState({examples: this.props.allExamples.examples, totalExamples: this.props.allExamples.totalRecords ? this.props.allExamples.totalRecords : 0, page: this.props.allExamples.page ? this.props.allExamples.page : 1})
+			this.setState({ examples: this.props.allExamples.examples, totalExamples: this.props.allExamples.totalRecords ? this.props.allExamples.totalRecords : 0, page: this.props.allExamples.page ? this.props.allExamples.page : 1 })
 		}
 	}
 
 	componentDidMount() {
 		this.autoLogin()
 		if (this.props.userExamples.examples.length && this.state.activeTab == 0 && this.state.examples.length == 0) {
-			this.setState({myExamples: this.props.userExamples.examples, totalExamples: this.props.userExamples.totalRecords, page: this.props.userExamples.page})
+			this.setState({ myExamples: this.props.userExamples.examples, totalExamples: this.props.userExamples.totalRecords, page: this.props.userExamples.page })
 		} else if (this.props.userExamples.examples.length == 0 && this.state.activeTab == 0 && this.state.myExamples.length == 0) {
 			this.getMyExamples()
 		}
 
 		if (this.props.allExamples.examples && this.state.examples.length == 0 && this.state.activeTab === 1) {
-			this.setState({examples: this.props.allExamples.examples, totalExamples: this.props.allExamples.totalRecords, page: this.props.allExamples.page})
+			this.setState({ examples: this.props.allExamples.examples, totalExamples: this.props.allExamples.totalRecords, page: this.props.allExamples.page })
 		} else if (this.props.allExamples.examples.length == 0 && this.state.activeTab == 0 && this.state.examples.length == 0) {
 			this.getAllExamples()
 		}
@@ -78,26 +78,26 @@ class ExamplesModal extends Component {
 		if (user) {
 			const response = await doAutoLogin(user.username, user.id)
 			if (response && response.username) {
-				setCacheItem(CacheTypes.UserData, JSON.stringify({username: response.username, id: response._id, admin: response.admin}))
+				setCacheItem(CacheTypes.UserData, JSON.stringify({ username: response.username, id: response._id, admin: response.admin }))
 				this.props.loginUser(true)
 				// this.getMyExamples()
 			} else {
 				removeCacheItem(CacheTypes.UserData)
 				this.props.loginUser(false)
-				this.setState({loading: false, login: false})
+				this.setState({ loading: false, login: false })
 			}
 		} else {
 			removeCacheItem(CacheTypes.UserData)
 			this.props.loginUser(false)
-			this.setState({login: false})
+			this.setState({ login: false })
 		}
 	}
 
 	getAllExamples = async (page = 1, loading = true) => {
 		if (this.props.login === true) {
-			this.setState({loading: loading})
+			this.setState({ loading: loading })
 			const response = await doGetAllExamples(page, this.state.examples.length)
-			if (response) {
+			if (response.examples) {
 				let responseData = this.state.examples.concat(response.examples)
 				const uniqueExamples = Object.values(
 					responseData.reduce((acc, item) => {
@@ -106,21 +106,21 @@ class ExamplesModal extends Component {
 					}, {})
 				)
 				if (this.props.login === true) {
-					this.props.saveAllExamples({examples: uniqueExamples, totalRecords: response.remainingRecords, page: page})
-					this.setState({examples: uniqueExamples, totalExamples: response.remainingRecords, loading: false, page: page})
+					this.props.saveAllExamples({ examples: uniqueExamples, totalRecords: response.remainingRecords, page: page })
+					this.setState({ examples: uniqueExamples, totalExamples: response.remainingRecords, loading: false, page: page })
 				}
-				this.setState({loading: false})
+				this.setState({ loading: false })
 			} else {
-				this.setState({loading: false})
+				this.setState({ loading: false })
 			}
 		}
 	}
 
 	getMyExamples = async (page = 1, loading = true) => {
 		if (this.props.login === true) {
-			this.setState({loading: loading})
+			this.setState({ loading: loading })
 			const response = await doGetMyExamples(page, this.state.myExamples.length)
-			if (response) {
+			if (response.examples) {
 				let responseData = this.state.myExamples.concat(response.examples)
 				const uniqueExamples = Object.values(
 					responseData.reduce((acc, item) => {
@@ -129,12 +129,12 @@ class ExamplesModal extends Component {
 					}, {})
 				)
 				if (this.props.login === true) {
-					this.props.saveUserExamples({examples: uniqueExamples, totalRecords: response.remainingRecords, page: page})
-					this.setState({myExamples: uniqueExamples, totalExamples: response.remainingRecords, loading: false, page: page})
+					this.props.saveUserExamples({ examples: uniqueExamples, totalRecords: response.remainingRecords, page: page })
+					this.setState({ myExamples: uniqueExamples, totalExamples: response.remainingRecords, loading: false, page: page })
 				}
-				this.setState({loading: false})
+				this.setState({ loading: false })
 			} else {
-				this.setState({loading: false})
+				this.setState({ loading: false })
 			}
 		}
 	}
@@ -150,7 +150,7 @@ class ExamplesModal extends Component {
 					}, {})
 				)
 				if (this.props.login === true) {
-					this.setState({examples: uniqueExamples, totalExamples: 0})
+					this.setState({ examples: uniqueExamples, totalExamples: 0 })
 				}
 			}
 		}
@@ -167,7 +167,7 @@ class ExamplesModal extends Component {
 					}, {})
 				)
 				if (this.props.login === true) {
-					this.setState({myExamples: uniqueExamples, totalExamples: 0})
+					this.setState({ myExamples: uniqueExamples, totalExamples: 0 })
 				}
 			} else {
 			}
@@ -184,21 +184,21 @@ class ExamplesModal extends Component {
 	// }
 
 	handleSearchInputChange = (event) => {
-		this.setState({searchQuery: event.target.value})
+		this.setState({ searchQuery: event.target.value })
 		if (event.target.value.trim().length && this.state.activeTab == 0 && this.state.totalExamples != 0) {
 			this.searchMyExamples(1, event.target.value)
 		} else if (event.target.value.trim().length == 0 && this.state.activeTab == 0) {
-			this.setState({myExamples: this.props.userExamples.examples, totalExamples: this.props.userExamples.totalRecords, page: this.props.userExamples.page})
+			this.setState({ myExamples: this.props.userExamples.examples, totalExamples: this.props.userExamples.totalRecords, page: this.props.userExamples.page })
 		}
 		if (event.target.value.trim().length && this.state.activeTab == 1 && this.state.totalExamples != 0) {
 			this.searchAllExamples(1, event.target.value)
 		} else if (event.target.value.trim().length == 0 && this.state.activeTab == 1) {
-			this.setState({examples: this.props.allExamples.examples, totalExamples: this.props.allExamples.totalRecords, page: this.props.allExamples.page})
+			this.setState({ examples: this.props.allExamples.examples, totalExamples: this.props.allExamples.totalRecords, page: this.props.allExamples.page })
 		}
 	}
 
 	render() {
-		const {examples, searchQuery, loading, myExamples, activeTab, saveSelectedExample, confirmationModel} = this.state
+		const { examples, searchQuery, loading, myExamples, activeTab, saveSelectedExample, confirmationModel } = this.state
 		let totalExamples = activeTab == 0 ? myExamples : activeTab == 1 && examples
 
 		if (this.state.totalExamples == 0) {
@@ -225,9 +225,9 @@ class ExamplesModal extends Component {
 												data-target="login"
 												onClick={() => {
 													this.props.saveSingleExample({})
-													this.props.saveAllExamples({examples: [], page: 1})
-													this.props.saveUserExamples({examples: [], page: 1})
-													this.setState({examples: [], myExamples: [], login: false, page: 1, searchQuery: ''})
+													this.props.saveAllExamples({ examples: [], page: 1 })
+													this.props.saveUserExamples({ examples: [], page: 1 })
+													this.setState({ examples: [], myExamples: [], login: false, page: 1, searchQuery: '' })
 													this.props.loginUser(false)
 													removeCacheItem(CacheTypes.UserData)
 												}}>
@@ -240,7 +240,7 @@ class ExamplesModal extends Component {
 													id="auth-login"
 													data-target="login"
 													onClick={() => {
-														this.setState({openLoginModal: true})
+														this.setState({ openLoginModal: true })
 													}}>
 													Login
 												</button>
@@ -249,7 +249,7 @@ class ExamplesModal extends Component {
 													id="auth-signup"
 													data-target="signup"
 													onClick={() => {
-														this.setState({openSignUpModal: true})
+														this.setState({ openSignUpModal: true })
 													}}>
 													Sign Up
 												</button>
@@ -270,9 +270,9 @@ class ExamplesModal extends Component {
 								<button
 									className={this.state.activeTab === 0 ? 'tab_button active' : 'tab_button'}
 									onClick={() => {
-										this.setState({activeTab: 0, page: 1, totalExamples: 0})
+										this.setState({ activeTab: 0, page: 1, totalExamples: 0 })
 										if (this.props.userExamples.examples.length == 0) {
-											this.setState({myExamples: [], totalExamples: 0})
+											this.setState({ myExamples: [], totalExamples: 0 })
 											this.getMyExamples()
 										}
 									}}>
@@ -281,9 +281,9 @@ class ExamplesModal extends Component {
 								<button
 									className={this.state.activeTab === 1 ? 'tab_button active' : 'tab_button'}
 									onClick={() => {
-										this.setState({activeTab: 1, page: 1, totalExamples: 0})
+										this.setState({ activeTab: 1, page: 1, totalExamples: 0 })
 										if (this.props.allExamples.examples.length == 0) {
-											this.setState({examples: [], totalExamples: 0})
+											this.setState({ examples: [], totalExamples: 0 })
 											this.getAllExamples()
 										}
 									}}>
@@ -292,34 +292,34 @@ class ExamplesModal extends Component {
 							</div>
 							<div className="container is-clipped">
 								<div className="card-container columns is-centered is-multiline" id="exampleID">
-									<div className="column" style={{display: 'flex', flexWrap: 'wrap', gap: '0.5rem'}}>
+									<div className="column" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
 										{totalExamples.length
 											? totalExamples.map((res, index) => {
-													return (
-														<div className="card" style={{width: '240px', marginBottom: '0.5rem'}} key={index}>
-															<div className="card-header">
-																<p className="card-header-title">{res.title}</p>
-															</div>
-
-															<div
-																className=""
-																onClick={() => {
-																	this.setState({saveSelectedExample: res, confirmationModel: true})
-																}}
-																style={{cursor: 'pointer'}}>
-																<a href={`#`}>
-																	<div style={{backgroundImage: `url(${res.image ? res.image : '/assets/devil-face-icon.png'})`}} id="egImage" className={res.image && ' image is-3by4'} />
-
-																	<div className="card-content">
-																		{/* <div className="">{res.title}</div> */}
-																		{/* <div className="">persistent state!</div> */}
-																		<div className="content">{res.description}</div>
-																	</div>
-																</a>
-															</div>
+												return (
+													<div className="card" style={{ width: '240px', marginBottom: '0.5rem' }} key={index}>
+														<div className="card-header">
+															<p className="card-header-title">{res.title}</p>
 														</div>
-													)
-											  })
+
+														<div
+															className=""
+															onClick={() => {
+																this.setState({ saveSelectedExample: res, confirmationModel: true })
+															}}
+															style={{ cursor: 'pointer' }}>
+															<a href={`#`}>
+																<div style={{ backgroundImage: `url(${res.image ? res.image : '/assets/devil-face-icon.png'})` }} id="egImage" className={res.image && ' image is-3by4'} />
+
+																<div className="card-content">
+																	{/* <div className="">{res.title}</div> */}
+																	{/* <div className="">persistent state!</div> */}
+																	<div className="content">{res.description}</div>
+																</div>
+															</a>
+														</div>
+													</div>
+												)
+											})
 											: ''}
 									</div>
 								</div>
@@ -340,7 +340,7 @@ class ExamplesModal extends Component {
 										 </button>
 									 </div>
 								 )} */}
-								{totalExamples.length == 0 && !loading ? <div style={{whiteSpace: 'nowrap', textAlign: 'center'}}>no examples found</div> : ''}
+								{totalExamples.length == 0 && !loading ? <div style={{ whiteSpace: 'nowrap', textAlign: 'center' }}>no examples found</div> : ''}
 							</div>
 						</div>
 					</div>
@@ -349,9 +349,9 @@ class ExamplesModal extends Component {
 					<LoginModal
 						closeLoginModal={() => {
 							if (getCacheItem(CacheTypes.UserData)) {
-								this.setState({login: true})
+								this.setState({ login: true })
 							}
-							this.setState({openLoginModal: false})
+							this.setState({ openLoginModal: false })
 						}}
 					/>
 				)}
@@ -359,16 +359,16 @@ class ExamplesModal extends Component {
 					<SignUpModal
 						closeSignUpModal={() => {
 							if (getCacheItem(CacheTypes.UserData)) {
-								this.setState({login: true})
+								this.setState({ login: true })
 							}
-							this.setState({openSignUpModal: false})
+							this.setState({ openSignUpModal: false })
 						}}
 					/>
 				)}
 
 				{confirmationModel && (
 					<ConfirmationModel
-						closeModal={() => this.setState({confirmationModel: false, saveSelectedExample: {}})}
+						closeModal={() => this.setState({ confirmationModel: false, saveSelectedExample: {} })}
 						title={'Overwrite ?'}
 						body={'Are you sure you want to overwrite editor code with this example ?'}
 						onContinue={() => {

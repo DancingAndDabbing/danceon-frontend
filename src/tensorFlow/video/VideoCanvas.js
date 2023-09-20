@@ -79,14 +79,14 @@ export class VideoCanvas {
 	}
 
 	drawCursor(pose, isClearCtx, lastFrame) {
-		if (isClearCtx) {
-			this.clearCtx(false)
-		}
-		if (lastFrame) {
-			const savedImage = new Image()
-			savedImage.src = lastFrame
-			this.ctx.drawImage(savedImage, 0, 0, this.video.videoWidth, this.video.videoHeight)
-		}
+		// if (isClearCtx) {
+		// 	this.clearCtx(false)
+		// }
+		// if (lastFrame) {
+		// 	const savedImage = new Image()
+		// 	savedImage.src = lastFrame
+		// 	this.ctx.drawImage(savedImage, 0, 0, this.video.videoWidth, this.video.videoHeight)
+		// }
 		if ((this.cursor == true || this.skeleton == true) && this.cursorPosition.x >= 0 && this.cursorPosition.y >= 0) {
 			this.draw.drawCursor(this.cursorPosition.x, this.cursorPosition.y, this.cursor, pose)
 		}

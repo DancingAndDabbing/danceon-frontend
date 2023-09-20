@@ -58,7 +58,7 @@ export class Draw {
 	}
 
 	drawCursor(x, y, isCursor, pose) {
-		window.lastPose = pose
+		// window.lastPose = pose
 		if (this.isCamera) {
 			if (isCursor) {
 				let w = 40
@@ -129,24 +129,24 @@ export class Draw {
 			}
 			this.ctx.restore()
 		} else {
+			let videoRatio = this.ctx.canvas.width / this.videoWidth
+			if (videoRatio >= 2) {
+				videoRatio = 1.7
+			} else {
+				videoRatio = 0.6
+			}
+			let w = 140 * videoRatio
+			let h = w / 2
+
+			let _x = (this.ctx.canvas.width / this.videoWidth) * x
+			_x = parseFloat(_x.toFixed(0))
+
+			let _y = (this.ctx.canvas.height / this.videoHeight) * y
+			_y = parseFloat(_y.toFixed(0))
+
+			let {_x: x2, _y: y2} = convertCursorOrigin(_x, _y, this.ctx.canvas.height, this.originWidth)
+
 			if (isCursor) {
-				let videoRatio = this.ctx.canvas.width / this.videoWidth
-				if (videoRatio >= 2) {
-					videoRatio = 1.7
-				} else {
-					videoRatio = 0.6
-				}
-				let w = 140 * videoRatio
-				let h = w / 2
-
-				let _x = (this.ctx.canvas.width / this.videoWidth) * x
-				_x = parseFloat(_x.toFixed(0))
-
-				let _y = (this.ctx.canvas.height / this.videoHeight) * y
-				_y = parseFloat(_y.toFixed(0))
-
-				let {_x: x2, _y: y2} = convertCursorOrigin(_x, _y, this.ctx.canvas.height, this.originWidth)
-
 				this.ctx.fillStyle = 'rgba(30, 30, 30, 0.5)'
 				this.ctx.strokeStyle = 'rgba(30, 30, 30, 0.5)'
 				this.ctx.lineWidth = DEFAULT_LINE_WIDTH
@@ -177,14 +177,23 @@ export class Draw {
 				pose.keypoints.forEach((p, i) => {
 					let sx = p.x
 					let sy = p.y
-					if (calculateDistance(x, y, sx, sy) < 8) {
+
+					// this.ctx.fillStyle = 'rgba(30, 30, 30, 0.5)'
+					// this.ctx.strokeStyle = 'rgba(30, 30, 30, 0.5)'
+					// this.ctx.lineWidth = DEFAULT_LINE_WIDTH
+
+					// const rect = new Path2D()
+					// rect.rect(constrain(x2, 0, this.ctx.canvas.width - w), constrain(parseFloat(this.ctx.canvas.height - y2) - 50 * videoRatio, 0, this.ctx.canvas.height - 120 * videoRatio), w, h)
+					// this.ctx.fill(rect)
+
+					if (calculateDistance(_x, _y, sx, sy) < 8) {
 						this.ctx.fillStyle = 'white'
-						this.ctx.font = '14px Arial'
+						this.ctx.font = `${32 * videoRatio + 'px Arial'}`
 						this.ctx.textAlign = 'left'
 						this.ctx.textBaseline = 'middle'
-						const name = p.name //.includes('left') ? p.name.replace('left', 'right') : p.name.replace('right', 'left')
-						const _yThreshold = isCursor ? 34 : 20
-						this.ctx.fillText(name, sx, sy + _yThreshold)
+						const name = p.name
+						const yConstrain = this.ctx.canvas.height - 120 * videoRatio
+						this.ctx.fillText(name, constrain(x2 + 20, 0, this.ctx.canvas.width - w), constrain(parseFloat(this.ctx.canvas.height - y2) - 50 * videoRatio, 0, yConstrain))
 					}
 				})
 			}
@@ -459,7 +468,7 @@ export class Draw {
 		let {_x: _x2, _y: _y2} = convertOrigin(x2, y2, this.ctx.canvas.height, this.isFlip ? this.originWidth : null)
 
 		this.ctx.fillStyle = fallbackToDefault(targetPose.how.fill, 'White')
-		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, INVISIBLE_COLOR)
+		this.ctx.strokeStyle = fallbackToDefault(targetPose.how.stroke, 'White')
 		this.ctx.lineWidth = fallbackToDefault(targetPose.how.strokeWeight, DEFAULT_LINE_WIDTH)
 
 		const line = new Path2D()

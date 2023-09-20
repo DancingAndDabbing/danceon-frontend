@@ -17,7 +17,8 @@ import {VideoCanvas} from './VideoCanvas'
 tfjsWasm.setWasmPaths(`https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@${tfjsWasm.version_wasm}/dist/`)
 
 let file = null
-let lastFrame = null //to show cursor position in case video is pause
+// let lastFrame = null
+let posesForPauseVideo = null
 
 class Video extends Component {
 	constructor(props) {
@@ -127,9 +128,9 @@ class Video extends Component {
 			return
 		}
 		this.videoCanvas.cursorPosition = {x: event.offsetX, y: event.offsetY}
-		if (!this.isPreparing && this.videoCanvas.video.paused) {
-			this.videoCanvas.drawCursor(window.lastPose, true, lastFrame)
-		}
+		// if (!this.isPreparing && this.videoCanvas.video.paused) {
+		// 	this.videoCanvas.drawCursor(window.lastPose, true, lastFrame)
+		// }
 	}
 
 	handleMouseOut = (event) => {
@@ -235,7 +236,7 @@ class Video extends Component {
 					this.onUpdatePoser(this.previousPoser)
 				}
 			} else if (this.videoCanvas.mediaRecorder.state === 'recording') {
-				lastFrame = this.videoCanvas.ctx.canvas.toDataURL('image/png')
+				// lastFrame = this.videoCanvas.ctx.canvas.toDataURL('image/png')
 				this.videoCanvas.updatePauseStatus(true)
 				this.playButtonRef.classList.add('fa-play')
 				this.playButtonRef.classList.remove('fa-pause')
@@ -272,7 +273,13 @@ class Video extends Component {
 	}
 
 	renderVideoResult = async () => {
-		if (this.isPreparing || this.videoCanvas.video.paused) {
+		if (this.isPreparing) {
+			return
+		}
+		if (this.videoCanvas.video.paused) {
+			this.videoCanvas.redrawCtx()
+			this.videoCanvas.drawResults(posesForPauseVideo)
+			requestAnimationFrame(this.renderVideoResult)
 			return
 		}
 		window.frameCount++
@@ -280,6 +287,7 @@ class Video extends Component {
 		this.progressBarRef.value = (this.videoCanvas.video.currentTime / this.videoCanvas.video.duration) * 100
 		this.beginEstimatePosesStats()
 		const poses = await this.detector.estimatePoses(this.videoCanvas.video, {maxPoses: this.maxPoses, flipHorizontal: false})
+		posesForPauseVideo = poses
 		this.endEstimatePosesStats()
 		if (this.videoCanvas) {
 			this.videoCanvas.redrawCtx()

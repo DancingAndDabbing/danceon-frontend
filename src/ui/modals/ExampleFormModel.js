@@ -1,10 +1,10 @@
-import React, {Component} from 'react'
-import {connect} from 'react-redux'
-import {loginUser, saveAllExamples, saveSingleExample, saveUserExamples} from '../../actions/authActions'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { loginUser, saveAllExamples, saveSingleExample, saveUserExamples } from '../../actions/authActions'
 
 import Loader from '../components/Loader'
-import {CacheTypes, getCacheItem, setCacheItem} from '../../utils/LocalStorage'
-import {doAddExamples, doDeleteExamples, doGetExampleById, doUpdateExampleById} from '../../apis'
+import { CacheTypes, getCacheItem, setCacheItem } from '../../utils/LocalStorage'
+import { doAddExamples, doDeleteExamples, doGetExampleById, doUpdateExampleById } from '../../apis'
 import ConfirmationModel from './ConfirmationModel'
 
 class ExampleFormModel extends Component {
@@ -32,7 +32,7 @@ class ExampleFormModel extends Component {
 	componentDidMount() {
 		if (this.props.singleExample.title) {
 			let response = this.props.singleExample
-			this.setState({exampleDetails: response, title: this.props.title ? this.props.title : response.title, description: response.description, tag: response.tags, exampleId: response._id})
+			this.setState({ exampleDetails: response, title: this.props.title ? this.props.title : response.title, description: response.description, tag: response.tags, exampleId: response._id })
 			// this.props.editorRef.current.setExampleCodeOnEditor(response.examples)
 		}
 	}
@@ -42,7 +42,7 @@ class ExampleFormModel extends Component {
 	}
 
 	updateCompileStatus = async (isCompile, isCodeUpdated) => {
-		this.setState({isCompile: isCompile, step: isCodeUpdated == true ? 2 : 1})
+		this.setState({ isCompile: isCompile, step: isCodeUpdated == true ? 2 : 1 })
 	}
 
 	handleSubmit = async () => {
@@ -55,27 +55,27 @@ class ExampleFormModel extends Component {
 			return
 		}
 		if (this.state.title) {
-			this.setState({loading: true})
+			this.setState({ loading: true })
 			const user = JSON.parse(getCacheItem(CacheTypes.UserData))
 			const imageData = this.props.isVideo == true ? this.props.videoRef.current.videoCanvas.ctx.canvas.toDataURL('image/png') : this.props.cameraRef.current.cameraCanvas.ctx.canvas.toDataURL('image/png')
 			const response = await doAddExamples('', this.props.editorRef.current.currentCode, this.state.title, this.state.description, this.state.tag, imageData, user.id)
 			if (response && response.title) {
-				this.setState({title: '', description: '', tag: 'Easy', loading: false})
+				this.setState({ title: '', description: '', tag: 'Easy', loading: false })
 				this.props.closeModal(true)
 				this.props.dispatch(saveSingleExample(response))
-				this.props.dispatch(saveUserExamples({examples: [...this.props.userExamples.examples, response], totalRecords: this.props.userExamples.totalRecords, page: this.props.userExamples.page}))
-				this.props.dispatch(saveAllExamples({examples: [...this.props.allExamples.examples, response], totalRecords: this.props.allExamples.totalRecords, page: this.props.allExamples.page}))
+				this.props.dispatch(saveUserExamples({ examples: [...this.props.userExamples.examples, response], totalRecords: this.props.userExamples.totalRecords, page: this.props.userExamples.page }))
+				this.props.dispatch(saveAllExamples({ examples: [...this.props.allExamples.examples, response], totalRecords: this.props.allExamples.totalRecords, page: this.props.allExamples.page }))
 			} else {
-				this.setState({loading: false, titleError: this.state.title ? false : true})
+				this.setState({ loading: false, titleError: this.state.title ? false : true })
 			}
 		} else {
-			this.setState({titleError: this.state.title ? false : true})
+			this.setState({ titleError: this.state.title ? false : true })
 		}
 	}
 
 	handleDeleteExample = async () => {
 		if (this.state.exampleId) {
-			this.setState({loading: true})
+			this.setState({ loading: true })
 			await doDeleteExamples(this.state.exampleId)
 
 			this.props.dispatch(saveSingleExample({}))
@@ -87,10 +87,10 @@ class ExampleFormModel extends Component {
 				return example._id !== this.state.exampleId && example.title
 			})
 
-			this.props.dispatch(saveUserExamples({examples: updatedExample, totalRecords: this.props.userExamples.totalRecords - 1 > 0 ? this.props.userExamples.totalRecords - 1 : 0, page: this.props.userExamples.page}))
-			this.props.dispatch(saveAllExamples({examples: updatedAllExample, totalRecords: this.props.allExamples.totalRecords - 1 > 0 ? this.props.allExamples.totalRecords - 1 : 0, page: this.props.allExamples.page}))
+			this.props.dispatch(saveUserExamples({ examples: updatedExample, totalRecords: this.props.userExamples.totalRecords - 1 > 0 ? this.props.userExamples.totalRecords - 1 : 0, page: this.props.userExamples.page }))
+			this.props.dispatch(saveAllExamples({ examples: updatedAllExample, totalRecords: this.props.allExamples.totalRecords - 1 > 0 ? this.props.allExamples.totalRecords - 1 : 0, page: this.props.allExamples.page }))
 			this.props.closeModal()
-			this.setState({title: '', description: '', tag: 'Easy', loading: false, deleteExampleModel: false})
+			this.setState({ title: '', description: '', tag: 'Easy', loading: false, deleteExampleModel: false })
 		}
 	}
 
@@ -99,11 +99,11 @@ class ExampleFormModel extends Component {
 		if (user && this.state.exampleDetails.userId !== user.id) {
 			this.handleSubmit()
 		} else if (this.state.title) {
-			this.setState({loading: true})
+			this.setState({ loading: true })
 			const imageData = this.props.isVideo == true ? this.props.videoRef.current.videoCanvas.ctx.canvas.toDataURL('image/png') : this.props.cameraRef.current.cameraCanvas.ctx.canvas.toDataURL('image/png')
 			const response = await doUpdateExampleById(this.state.exampleId, this.props.editorRef.current.currentCode, this.state.title, this.state.description, this.state.tag, imageData)
 			if (response.title) {
-				this.setState({title: response.title, description: response.description, tag: response.tags, loading: false})
+				this.setState({ title: response.title, description: response.description, tag: response.tags, loading: false })
 				this.props.dispatch(saveSingleExample(response))
 				let updatedExample = this.props.userExamples.examples.map((example) => {
 					if (example._id === response._id) {
@@ -112,27 +112,34 @@ class ExampleFormModel extends Component {
 						return example
 					}
 				})
+				let updatedinAllExample = this.props.allExamples.examples.map((example) => {
+					if (example._id === response._id) {
+						return response
+					} else {
+						return example
+					}
+				})
 				this.props.editorRef.current.setExampleCodeOnEditor(response.examples)
-				this.props.dispatch(saveUserExamples({examples: updatedExample, totalRecords: this.props.userExamples.totalRecords, page: this.props.userExamples.page}))
-				this.props.dispatch(saveAllExamples({examples: updatedExample, totalRecords: this.props.allExamples.totalRecords, page: this.props.allExamples.page}))
+				this.props.dispatch(saveUserExamples({ examples: updatedExample, totalRecords: this.props.userExamples.totalRecords, page: this.props.userExamples.page }))
+				this.props.dispatch(saveAllExamples({ examples: updatedinAllExample, totalRecords: this.props.allExamples.totalRecords, page: this.props.allExamples.page }))
 				this.props.closeModal(true)
 			} else {
-				this.setState({loading: false, titleError: this.state.title ? false : true})
+				this.setState({ loading: false, titleError: this.state.title ? false : true })
 			}
 		} else {
-			this.setState({titleError: this.state.title ? false : true})
+			this.setState({ titleError: this.state.title ? false : true })
 		}
 	}
 
 	render() {
-		const {tag, loading, exampleDetails, titleError, deleteExampleModel} = this.state
+		const { tag, loading, exampleDetails, titleError, deleteExampleModel } = this.state
 		return (
 			<>
 				<div className="modal is-active" id="egID">
 					<div className="modal-background"></div>
 					<div className="modal-content">
 						<div className="box">
-							<div style={{display: 'flex', justifyContent: 'flex-end'}}>
+							<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
 								<button className="delete" aria-label="close" onClick={this.closeModal}></button>
 							</div>
 
@@ -140,9 +147,9 @@ class ExampleFormModel extends Component {
 							<div className="field">
 								<label className="label">Title</label>
 								<div className="control">
-									<input className="input is-success" type="text" placeholder="Text title" name="title" id="title" value={this.state.title} required="" onChange={(e) => this.setState({title: e.target.value, titleError: false})} />
+									<input className="input is-success" type="text" placeholder="Text title" name="title" id="title" value={this.state.title} required="" onChange={(e) => this.setState({ title: e.target.value, titleError: false })} />
 								</div>
-								{titleError && <div style={{color: 'red', marginBottom: '0.5rem'}}>Title is required</div>}
+								{titleError && <div style={{ color: 'red', marginBottom: '0.5rem' }}>Title is required</div>}
 							</div>
 
 							<div className="field">
@@ -156,19 +163,19 @@ class ExampleFormModel extends Component {
 										id="description"
 										required=""
 										value={this.state.description}
-										onChange={(e) => this.setState({description: e.target.value})}
+										onChange={(e) => this.setState({ description: e.target.value })}
 									/>
 								</div>
 							</div>
-							<div className="field is-grouped example-stats" style={{gap: '0.5rem'}}>
+							<div className="field is-grouped example-stats" style={{ gap: '0.5rem' }}>
 								<div className="example-stats">
 									<input
 										type="radio"
-										style={{cursor: 'pointer'}}
+										style={{ cursor: 'pointer' }}
 										name={'Easy'}
 										checked={tag === 'Easy' ? true : false}
 										onChange={(e) => {
-											this.setState({tag: 'Easy'})
+											this.setState({ tag: 'Easy' })
 										}}
 									/>
 									Easy
@@ -176,11 +183,11 @@ class ExampleFormModel extends Component {
 								<div className="example-stats">
 									<input
 										type="radio"
-										style={{cursor: 'pointer'}}
+										style={{ cursor: 'pointer' }}
 										name={'Medium'}
 										checked={tag === 'Medium' ? true : false}
 										onChange={(e) => {
-											this.setState({tag: 'Medium'})
+											this.setState({ tag: 'Medium' })
 										}}
 									/>
 									Medium
@@ -188,11 +195,11 @@ class ExampleFormModel extends Component {
 								<div className="example-stats">
 									<input
 										type="radio"
-										style={{cursor: 'pointer'}}
+										style={{ cursor: 'pointer' }}
 										name={'Tough'}
 										checked={tag === 'Tough' ? true : false}
 										onChange={(e) => {
-											this.setState({tag: 'Tough'})
+											this.setState({ tag: 'Tough' })
 										}}
 									/>
 									Tough
@@ -208,7 +215,7 @@ class ExampleFormModel extends Component {
 									</div>
 									{exampleDetails.title && JSON.parse(getCacheItem(CacheTypes.UserData)).admin ? (
 										<div className="">
-											<button className="button is-link is-light" onClick={() => this.setState({deleteExampleModel: true})}>
+											<button className="button is-link is-light" onClick={() => this.setState({ deleteExampleModel: true })}>
 												Delete
 											</button>
 										</div>
@@ -216,7 +223,7 @@ class ExampleFormModel extends Component {
 										exampleDetails.title &&
 										exampleDetails.userId === JSON.parse(getCacheItem(CacheTypes.UserData)).id && (
 											<div className="">
-												<button className="button is-link is-light" onClick={() => this.setState({deleteExampleModel: true})}>
+												<button className="button is-link is-light" onClick={() => this.setState({ deleteExampleModel: true })}>
 													Delete
 												</button>
 											</div>
@@ -237,7 +244,7 @@ class ExampleFormModel extends Component {
 
 							{deleteExampleModel && (
 								<ConfirmationModel
-									closeModal={() => this.setState({deleteExampleModel: false})}
+									closeModal={() => this.setState({ deleteExampleModel: false })}
 									title={'Delete Example ?'}
 									body={'Are you sure you want to delete this example ?'}
 									onDelete={this.handleDeleteExample}
