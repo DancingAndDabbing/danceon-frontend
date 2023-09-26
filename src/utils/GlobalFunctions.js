@@ -14,7 +14,7 @@ window.HALF_PI = Math.PI / 2
 window.OPEN = '' //just ignore it because we dont have open anymore
 window.frameCount = 0
 window.BOLD = '' //to fix example 18
-window.video = {time: 30}
+window.video = {time: 1}
 
 window._x = function (value) {
 	return window.width - value
@@ -26,6 +26,7 @@ window._y = function (value) {
 
 window.videoTime = 0
 window.video.time = function () {
+	console.log(window.videoTime)
 	return window.videoTime
 }
 

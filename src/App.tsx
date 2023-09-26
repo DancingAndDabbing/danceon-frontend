@@ -26,6 +26,13 @@ interface App {
 	modelType: any
 	supportedModel: any
 	videoEvent: any
+	tooltipValue: any
+	progressBar: any
+	tooltip: any
+	specificFrame: any
+	parent: any
+	myVideoRef: any
+	progressBarValue: any
 }
 
 class App extends Component<any, any> {
@@ -36,14 +43,20 @@ class App extends Component<any, any> {
 		this.editorRef = React.createRef()
 		this.cameraRef = React.createRef()
 		this.videoRef = React.createRef()
+		this.myVideoRef = React.createRef()
 		this.codeStatusRef = React.createRef()
 		this.isCameraSetup = false
 		this.modelType = getCacheItem(CacheTypes.ModelType)
 		this.supportedModel = getCacheItem(CacheTypes.SupportedModels)
 		// this.supportedModel = poseDetection.SupportedModels.BlazePose
 		this.state = {
-			isVideo: false
+			isVideo: false,
+			tooltipValue: 0
 		}
+		this.progressBar = React.createRef()
+		this.tooltip = React.createRef()
+		this.specificFrame = React.createRef()
+		this.parent = React.createRef()
 	}
 
 	changeMode = async () => {
@@ -173,7 +186,42 @@ class App extends Component<any, any> {
 		this.props.dispatch(saveSingleExample({}))
 	}
 
+	showTooltip = (e) => {
+		const myVideo = this.myVideoRef.current.duration
+		const progressBar = this.progressBar
+		const tooltip = this.tooltip
+		const w = progressBar.clientWidth
+		const x = e.nativeEvent.offsetX
+		const percents = x / w
+		const max = parseInt(progressBar.max, 10)
+		tooltip.innerHTML = 'frame:' + ' ' + Math.floor(percents * myVideo + 0.5)
+		this.handleMouseMove(Math.floor(percents * max + 0.5))
+	}
+
+	handleMouseMove = (e) => {
+		const parentRightSpace = this.parent.getBoundingClientRect()
+		const tooltipRightSpace = this.tooltip.getBoundingClientRect()
+		const specificFrameRightSpace = this.specificFrame.getBoundingClientRect()
+
+		const toolTipDistanceFromRight = parentRightSpace.right - tooltipRightSpace.right
+		const specificFramepDistanceFromRight = parentRightSpace.right - specificFrameRightSpace.right
+		// const x = `${e.clientX + 20}px`;
+		// const x = e < 50 ? `${e + 4}%` : '50%';
+		if (toolTipDistanceFromRight > 20 || specificFramepDistanceFromRight > 70) {
+			this.tooltip.style.left = `${e}%`
+		}
+
+		this.specificFrame.style.left = `${e}%`
+	}
+
+	handleInputChange = (e) => {
+		const value = parseInt(e.target.value)
+		this.setState({tooltipValue: value})
+		this.videoRef.current.progressBarClick(value)
+	}
+
 	render() {
+		const {tooltipValue} = this.state
 		return (
 			<div className="App">
 				<Navbar
@@ -230,7 +278,7 @@ class App extends Component<any, any> {
 									{/* <!-- this div is for video --> */}
 									<div id="video_section" className="output_hide">
 										<canvas id="video_output" className="videoWrapper" />
-										<video id="video" className="videoWrapper">
+										<video id="video" ref={this.myVideoRef} className="videoWrapper">
 											<source id="currentVID" src="" type="video/mp4" />
 										</video>
 										<div id="top-bar" className="fileControlsWrapper">
@@ -242,8 +290,12 @@ class App extends Component<any, any> {
 											<button id="playButton" className="playBtn fas fa-play"></button>
 											<button id="volumeButton" className="volumeBtn fas fa-volume"></button>
 											<button id="recordButton" className="recordBtn fas fa-circle"></button>
-											<div className="progress-bar">
-												<progress value="0" max="100" id="progressBar"></progress>
+											<div className="progress-bar" ref={(parent) => (this.parent = parent)}>
+												<div id="specificFrame" ref={(specificFrame) => (this.specificFrame = specificFrame)}></div>
+												<input type="range" value={tooltipValue} id="progressBar" min="0" max="100" onMouseMove={this.showTooltip} onChange={this.handleInputChange} ref={(progressBar) => (this.progressBar = progressBar)} />
+												<p id="tooltip" ref={(tooltip) => (this.tooltip = tooltip)}>
+													frame:{tooltipValue}
+												</p>
 											</div>
 										</div>
 										<div id="recordingNotifier" className="notification is-danger hide">

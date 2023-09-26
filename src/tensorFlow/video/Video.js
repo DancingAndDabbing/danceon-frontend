@@ -89,6 +89,7 @@ class Video extends Component {
 		this.recordButtonRef.onclick = this.recordButton
 
 		this.progressBarRef = document.getElementById('progressBar')
+		// this.progressBarRef.onclick = this.progressBarClick
 
 		this.setUpVideoPoseDetection()
 		this.videoCanvas.ctx.canvas.addEventListener('mousemove', this.handleMouseMove)
@@ -232,6 +233,7 @@ class Video extends Component {
 				})
 				//todo..do we need stop previous frame if its failed?
 				requestAnimationFrame(this.renderVideoResult)
+				requestAnimationFrame(this.renderProgressBarResult)
 				if (this.previousPoser) {
 					this.onUpdatePoser(this.previousPoser)
 				}
@@ -251,6 +253,7 @@ class Video extends Component {
 				this.videoCanvas.video.play()
 				this.videoCanvas.mediaRecorder.resume()
 				requestAnimationFrame(this.renderVideoResult)
+				requestAnimationFrame(this.renderProgressBarResult)
 			}
 		} catch (e) {
 			alert(e)
@@ -282,9 +285,6 @@ class Video extends Component {
 			requestAnimationFrame(this.renderVideoResult)
 			return
 		}
-		window.frameCount++
-		window.videoTime = this.videoCanvas.video.currentTime
-		this.progressBarRef.value = (this.videoCanvas.video.currentTime / this.videoCanvas.video.duration) * 100
 		this.beginEstimatePosesStats()
 		const poses = await this.detector.estimatePoses(this.videoCanvas.video, {maxPoses: this.maxPoses, flipHorizontal: false})
 		posesForPauseVideo = poses
@@ -323,6 +323,23 @@ class Video extends Component {
 			console.log('video renderMessage failed')
 		}
 		this.messageAnimationFrameId = requestAnimationFrame(this.renderMessage)
+	}
+
+	renderProgressBarResult = async () => {
+		if (this.isPreparing) {
+			return
+		}
+		window.frameCount++
+		window.videoTime = this.videoCanvas.video.currentTime
+		this.progressBarRef.value = (this.videoCanvas.video.currentTime / this.videoCanvas.video.duration) * 100
+		requestAnimationFrame(this.renderProgressBarResult)
+	}
+
+	progressBarClick = async (value) => {
+		if (this.isPreparing) {
+			return
+		}
+		this.videoCanvas.video.currentTime = ((value * this.videoCanvas.video.duration) / 100).toFixed(0)
 	}
 
 	volumeButton = async () => {

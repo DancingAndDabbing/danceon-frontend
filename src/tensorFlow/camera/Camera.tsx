@@ -65,6 +65,7 @@ class Camera extends Component<any, any> {
 	}
 
 	async initSetup() {
+		;(window as any).videoTime = 0
 		this.messageAnimationFrameId = requestAnimationFrame(this.renderMessage)
 		await this.setUpCamera()
 		tf.env().setFlags({})
@@ -167,6 +168,7 @@ class Camera extends Component<any, any> {
 			}
 			return
 		}
+		;(window as any).videoTime++
 		let poses = null
 		if (this.detector != null) {
 			this.beginEstimatePosesStats()
