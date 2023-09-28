@@ -372,8 +372,14 @@ class ExamplesModal extends Component {
 						title={'Overwrite ?'}
 						body={'Are you sure you want to overwrite editor code with this example ?'}
 						onContinue={() => {
-							this.props.saveSingleExample(saveSelectedExample)
-							this.closeModal()
+							this.props.saveSingleExample({})
+							setTimeout(() => {
+								this.props.saveSingleExample(saveSelectedExample);
+
+							}, 300);
+							this.closeModal();
+							// this.props.saveSingleExample(saveSelectedExample)
+							// this.closeModal()
 						}}
 						overwriteModel={true}
 					/>

@@ -282,20 +282,20 @@ class Video extends Component {
 		if (this.videoCanvas.video.paused) {
 			this.videoCanvas.redrawCtx()
 			this.videoCanvas.drawResults(posesForPauseVideo)
-			requestAnimationFrame(this.renderVideoResult)
+			this.endEstimatePosesStats()
+			// requestAnimationFrame(this.renderVideoResult)
 			return
 		}
 		this.beginEstimatePosesStats()
 		const poses = await this.detector.estimatePoses(this.videoCanvas.video, {maxPoses: this.maxPoses, flipHorizontal: false})
 		posesForPauseVideo = poses
-		this.endEstimatePosesStats()
 		if (this.videoCanvas) {
 			this.videoCanvas.redrawCtx()
 			if (poses.length > 0) {
 				this.videoCanvas.drawResults(poses)
 			}
 		}
-		requestAnimationFrame(this.renderVideoResult)
+		this.endEstimatePosesStats()
 	}
 
 	beginEstimatePosesStats = async () => {
@@ -303,17 +303,19 @@ class Video extends Component {
 	}
 
 	endEstimatePosesStats = async () => {
-		const endInferenceTime = (performance || Date).now()
-		this.inferenceTimeSum += endInferenceTime - this.startInferenceTime
-		++this.numInferences
-		const panelUpdateMilliseconds = 1000
-		if (endInferenceTime - this.lastPanelUpdate >= panelUpdateMilliseconds) {
-			// const averageInferenceTime = this.inferenceTimeSum / this.numInferences
-			this.inferenceTimeSum = 0
-			this.numInferences = 0
-			// console.log('current fps is: ' + 1000.0 / averageInferenceTime, 120)
-			this.lastPanelUpdate = endInferenceTime
-		}
+		const frameDelay = 1000 / 30
+		// const endInferenceTime = (performance || Date).now()
+		// this.inferenceTimeSum += endInferenceTime - this.startInferenceTime
+		// ++this.numInferences
+		// const panelUpdateMilliseconds = 1000
+		// if (endInferenceTime - this.lastPanelUpdate >= panelUpdateMilliseconds) {
+		// 	// const averageInferenceTime = this.inferenceTimeSum / this.numInferences
+		// 	this.inferenceTimeSum = 0
+		// 	this.numInferences = 0
+		// 	// console.log('current fps is: ' + 1000.0 / averageInferenceTime, 120)
+		// 	this.lastPanelUpdate = endInferenceTime
+		// }
+		setTimeout(requestAnimationFrame(this.renderVideoResult), frameDelay)
 	}
 
 	renderMessage = async () => {
