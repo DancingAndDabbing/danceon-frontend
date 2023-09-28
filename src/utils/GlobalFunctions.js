@@ -55,7 +55,7 @@ window.random = function (min, max) {
 	const randomDecimal = Math.random()
 	const randomInRange = randomDecimal * (max - min)
 	const result = randomInRange + min
-	return result.toFixed(0)
+	return result.toFixed(2)
 }
 
 window.cos = function (value) {

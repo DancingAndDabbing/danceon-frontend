@@ -194,7 +194,7 @@ class App extends Component<any, any> {
 		const x = e.nativeEvent.offsetX
 		const percents = x / w
 		const max = parseInt(progressBar.max, 10)
-		tooltip.innerHTML = 'frame:' + ' ' + Math.floor(percents * myVideo + 0.5)
+		tooltip.innerHTML = 'sec:' + ' ' + (percents * myVideo + 0.5).toFixed(2)
 		this.handleMouseMove(Math.floor(percents * max + 0.5))
 	}
 
@@ -294,7 +294,7 @@ class App extends Component<any, any> {
 												<div id="specificFrame" ref={(specificFrame) => (this.specificFrame = specificFrame)}></div>
 												<input type="range" value={tooltipValue} id="progressBar" min="0" max="100" onMouseMove={this.showTooltip} onChange={this.handleInputChange} ref={(progressBar) => (this.progressBar = progressBar)} />
 												<p id="tooltip" ref={(tooltip) => (this.tooltip = tooltip)}>
-													frame:{tooltipValue}
+													sec:{tooltipValue}
 												</p>
 											</div>
 										</div>
