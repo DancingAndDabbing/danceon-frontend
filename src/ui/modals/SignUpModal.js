@@ -17,7 +17,8 @@ class SignUpModal extends Component {
 			username: '',
 			password: '',
 			loading: false,
-			error: false
+			error: false,
+			signUpError: ''
 		}
 	}
 
@@ -27,18 +28,23 @@ class SignUpModal extends Component {
 
 	handleSubmit = async () => {
 		this.setState({loading: true})
-		const response = await doSignUp(this.state.username, this.state.password)
-		if (response && response.username) {
-			setCacheItem(CacheTypes.UserData, JSON.stringify({username: response.username, id: response._id, admin: response.admin}))
+		let response = await doSignUp(this.state.username, this.state.password)
+		if (response.data && response.data.username) {
+			response = response.data
+			setCacheItem(CacheTypes.UserData, JSON.stringify({username: response.username, id: response.id, admin: response.admin}))
 			this.props.dispatch(loginUser(true))
 			this.props.closeSignUpModal()
 		} else {
-			this.setState({loading: false, error: true})
+			if (response.success == false) {
+				this.setState({loading: false, error: true, signUpError: response.message})
+			} else {
+				this.setState({loading: false, error: true, signUpError: ''})
+			}
 		}
 	}
 
 	render() {
-		const {loading, error} = this.state
+		const {loading, error, signUpError} = this.state
 		return (
 			<div class="modal is-active" id="signup">
 				<Loader loading={loading} />
@@ -59,7 +65,7 @@ class SignUpModal extends Component {
 											<i class="fas fa-check"></i>
 										</span>
 									</div>
-									<p class="help is-success">This username is available</p>
+									<p class="help is-success">{signUpError ? '' : 'This username is available'}</p>
 								</div>
 
 								<div class="field">
@@ -74,7 +80,7 @@ class SignUpModal extends Component {
 										</span>
 									</div>
 								</div>
-								{error && <div style={{color: 'red', marginBottom: '0.5rem'}}>Signup failed</div>}
+								{error && <div style={{color: 'red', marginBottom: '0.5rem'}}>{signUpError ? signUpError : 'Signup Failed'}</div>}
 								<div class="field is-grouped">
 									<div class="control">
 										<button class="button is-link" onClick={this.handleSubmit}>

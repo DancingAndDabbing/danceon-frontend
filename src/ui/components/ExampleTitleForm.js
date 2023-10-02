@@ -24,12 +24,16 @@ class ExampleTitleForm extends Component {
 		}
 	}
 
+	componentDidMount() {
+		this.props.dispatch(loginUser(getCacheItem(CacheTypes.UserData) ? true : false))
+	}
+
 	componentDidUpdate(prevProps) {
 		this.props.dispatch(loginUser(getCacheItem(CacheTypes.UserData) ? true : false))
 
 		if (prevProps.singleExample != this.props.singleExample) {
 			const response = this.props.singleExample
-			this.setState({exampleDetails: response, title: response.title ? response.title : '', description: response.description ? response.description : '', exampleId: response._id ? response._id : ''})
+			this.setState({exampleDetails: response, title: response.title ? response.title : '', description: response.description ? response.description : '', exampleId: response.id ? response.id : ''})
 			if (response.examples) {
 				this.props.editorRef.current.setExampleCodeOnEditor(response.examples)
 			} else {
@@ -50,17 +54,16 @@ class ExampleTitleForm extends Component {
 			this.props.dispatch(saveSingleExample({}))
 
 			let updatedExample = this.props.userExamples.examples.filter((example) => {
-				return example._id !== this.state.exampleId && example.title
+				return example.id !== this.state.exampleId && example.title
 			})
 
 			let updatedAllExample = this.props.allExamples.examples.filter((example) => {
-				return example._id !== this.state.exampleId && example.title
+				return example.id !== this.state.exampleId && example.title
 			})
 
 			this.props.dispatch(saveUserExamples({examples: updatedExample, totalRecords: this.props.userExamples.totalRecords - 1 > 0 ? this.props.userExamples.totalRecords - 1 : 0, page: this.props.userExamples.page}))
 			this.props.dispatch(saveAllExamples({examples: updatedAllExample, totalRecords: this.props.allExamples.totalRecords - 1 > 0 ? this.props.allExamples.totalRecords - 1 : 0, page: this.props.allExamples.page}))
 			this.setState({title: '', loading: false, deleteExampleModel: false})
-			// this.props.dispatch(saveUserExamples({examples: updatedExample, totalRecords: this.props.userExamples.totalRecords - 1 > 0 ? this.props.userExamples.totalRecords - 1 : 0, page: this.props.userExamples.page}))
 		}
 	}
 
@@ -90,7 +93,7 @@ class ExampleTitleForm extends Component {
 						</div>
 					) : (
 						exampleDetails.title &&
-						exampleDetails.userId === JSON.parse(getCacheItem(CacheTypes.UserData)).id && (
+						exampleDetails.userId == JSON.parse(getCacheItem(CacheTypes.UserData)).id && (
 							<div className="">
 								<button className="button is-link is-light" onClick={() => this.setState({deleteExampleModel: true})}>
 									Delete

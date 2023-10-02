@@ -106,13 +106,13 @@ export class Draw {
 				})
 			}
 			if (pose) {
-				// if (!isCursor) {
-				// 	this.ctx.save()
-				// 	if (this.isFlip) {
-				// 		this.ctx.translate(this.ctx.canvas.width, 0)
-				// 		this.ctx.scale(-1, 1)
-				// 	}
-				// }
+				if (!isCursor) {
+					this.ctx.save()
+					if (this.isFlip) {
+						this.ctx.translate(this.ctx.canvas.width, 0)
+						this.ctx.scale(-1, 1)
+					}
+				}
 				pose.keypoints.forEach((p, i) => {
 					let sx = p.x
 					let sy = p.y

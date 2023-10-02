@@ -29,7 +29,7 @@ class LoginModal extends Component {
 		this.setState({loading: true})
 		const response = await doLogin(this.state.username, this.state.password)
 		if (response && response.username) {
-			setCacheItem(CacheTypes.UserData, JSON.stringify({username: response.username, id: response._id, admin: response.admin}))
+			setCacheItem(CacheTypes.UserData, JSON.stringify({username: response.username, id: response.id, admin: response.admin}))
 			this.props.loginUser(true)
 			this.props.closeLoginModal()
 		} else {

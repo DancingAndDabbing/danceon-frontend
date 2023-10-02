@@ -14,7 +14,7 @@ axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*'
 export const doSignUp = async (username, password) => {
 	let response = {}
 	await axios
-		.post(`${process.env.REACT_APP_BASE_URL}/signup`, {username, password})
+		.post(`${process.env.REACT_APP_BASE_URL}/user/register`, {username, password})
 		.then((res) => {
 			if (res) {
 				response = res.data
@@ -29,10 +29,10 @@ export const doSignUp = async (username, password) => {
 export const doLogin = async (username, password) => {
 	let response = {}
 	await axios
-		.post(`${process.env.REACT_APP_BASE_URL}/login`, {username, password})
+		.post(`${process.env.REACT_APP_BASE_URL}/user/login`, {username, password})
 		.then((res) => {
 			if (res) {
-				response = res.data
+				response = res.data.data
 			}
 		})
 		.catch(function (error) {
@@ -45,10 +45,10 @@ export const doGetAllExamples = async (page, skip) => {
 	const user = JSON.parse(getCacheItem(CacheTypes.UserData))
 	let response = {}
 	await axios
-		.get(`${process.env.REACT_APP_BASE_URL}/examples/files?id=${user.id}&page=${page}&skip=${skip}`)
+		.get(`${process.env.REACT_APP_BASE_URL}/example/get_examples?id=${user.id}&page=${page}&skip=${skip}`)
 		.then((res) => {
 			if (res) {
-				response = res.data
+				response = res.data.data
 			}
 		})
 		.catch(function (error) {
@@ -61,10 +61,10 @@ export const doGetMyExamples = async (page, skip) => {
 	const user = JSON.parse(getCacheItem(CacheTypes.UserData))
 	let response = {}
 	await axios
-		.get(`${process.env.REACT_APP_BASE_URL}/examples/my_examples?id=${user.id}&page=${page}&skip=${skip}`)
+		.get(`${process.env.REACT_APP_BASE_URL}/example/my_examples?id=${user.id}&page=${page}&skip=${skip}`)
 		.then((res) => {
 			if (res) {
-				response = res.data
+				response = res.data.data
 			}
 		})
 		.catch(function (error) {
@@ -76,7 +76,7 @@ export const doGetMyExamples = async (page, skip) => {
 export const doAddExamples = async (username, code, title, description, tag, image, userId) => {
 	let response = {}
 	await axios
-		.post(`${process.env.REACT_APP_BASE_URL}/examples`, {username, desc: description, title, code, tag, image, userId})
+		.post(`${process.env.REACT_APP_BASE_URL}/example/create_example`, {username, description: description, title, examples: code, tags: tag, image, userId})
 		.then((res) => {
 			if (res) {
 				response = res.data
@@ -91,7 +91,7 @@ export const doAddExamples = async (username, code, title, description, tag, ima
 export const doDeleteExamples = async (id) => {
 	let response = {}
 	await axios
-		.delete(`${process.env.REACT_APP_BASE_URL}/examples?dbID=${id}`)
+		.delete(`${process.env.REACT_APP_BASE_URL}/example/delete_example/${id}`)
 		.then((res) => {
 			if (res) {
 				response = res.data
@@ -106,7 +106,7 @@ export const doDeleteExamples = async (id) => {
 export const doGetExampleById = async (id) => {
 	let response = {}
 	await axios
-		.get(`${process.env.REACT_APP_BASE_URL}/examples?dbID=${id}`)
+		.get(`${process.env.REACT_APP_BASE_URL}/example?id=${id}`)
 		.then((res) => {
 			if (res) {
 				response = res.data
@@ -121,7 +121,7 @@ export const doGetExampleById = async (id) => {
 export const doUpdateExampleById = async (id, code, title, description, tag, image) => {
 	let response = {}
 	await axios
-		.put(`${process.env.REACT_APP_BASE_URL}/examples/update?dbID=${id}`, {code, title, description, tag, image})
+		.put(`${process.env.REACT_APP_BASE_URL}/example/update_example/${id}`, {code, title, description, tag, image})
 		.then((res) => {
 			if (res) {
 				response = res.data
@@ -136,10 +136,10 @@ export const doUpdateExampleById = async (id, code, title, description, tag, ima
 export const doAutoLogin = async (username, id) => {
 	let response = {}
 	await axios
-		.post(`${process.env.REACT_APP_BASE_URL}/login/auto_login`, {username, id})
+		.post(`${process.env.REACT_APP_BASE_URL}/user/auto_login`, {username, id})
 		.then((res) => {
 			if (res) {
-				response = res.data
+				response = res.data.data
 			}
 		})
 		.catch(function (error) {
@@ -152,10 +152,10 @@ export const doGetSearchAllExamples = async (page, skip, query) => {
 	const user = JSON.parse(getCacheItem(CacheTypes.UserData))
 	let response = {}
 	await axios
-		.get(`${process.env.REACT_APP_BASE_URL}/examples/search_all_examples?id=${user.id}&page=${page}&skip=${skip}&query=${query}`)
+		.get(`${process.env.REACT_APP_BASE_URL}/example/search_all_examples?id=${user.id}&page=${page}&skip=${skip}&query=${query}`)
 		.then((res) => {
 			if (res) {
-				response = res.data
+				response = res.data.data
 			}
 		})
 		.catch(function (error) {
@@ -168,10 +168,10 @@ export const doGetSearchMyExamples = async (page, skip, query) => {
 	const user = JSON.parse(getCacheItem(CacheTypes.UserData))
 	let response = {}
 	await axios
-		.get(`${process.env.REACT_APP_BASE_URL}/examples/search_my_examples?id=${user.id}&page=${page}&skip=${skip}&query=${query}`)
+		.get(`${process.env.REACT_APP_BASE_URL}/example/search_user_examples?id=${user.id}&page=${page}&skip=${skip}&query=${query}`)
 		.then((res) => {
 			if (res) {
-				response = res.data
+				response = res.data.data
 			}
 		})
 		.catch(function (error) {
