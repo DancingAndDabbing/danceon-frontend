@@ -194,7 +194,7 @@ class App extends Component<any, any> {
 		const x = e.nativeEvent.offsetX
 		const percents = x / w
 		const max = parseInt(progressBar.max, 10)
-		tooltip.innerHTML = 'sec:' + ' ' + (percents * myVideo + 0.5).toFixed(2)
+		tooltip.innerHTML = 'sec:' + ' ' + (percents * myVideo).toFixed(2)
 		this.handleMouseMove(Math.floor(percents * max + 0.5))
 	}
 
