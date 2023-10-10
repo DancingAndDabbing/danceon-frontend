@@ -23,25 +23,26 @@ interface CameraCanvas {
 	container: any
 	editorColumn: any
 	dispalySection: any
+	isCameraFlip: any
 }
 
 class CameraCanvas extends Component<any, any> {
-	constructor(props: any) {
+	constructor(props: any, invalidShapeError: any) {
 		super(props)
 		this.poser = null
 		this.ctx = props.getContext('2d')
-		this.draw = new Draw(this.ctx, true)
+		this.draw = new Draw(this.ctx, true, invalidShapeError)
 		this.container = document.querySelector('#container')
 		this.editorColumn = document.querySelector('#editorColumn')
 		this.dispalySection = document.querySelector('#main')
-
 		this.skeleton = getCacheItem(CacheTypes.Skeleton) == 'true' ? true : false
 		this.cursor = getCacheItem(CacheTypes.Cursor) == 'true' ? true : false
 		this.cursorPosition = {x: 0, y: 0}
 		this.videoWidth = props.width
 		this.videoHeight = props.height
 		this.draw.updateDrawDimension(this.videoWidth, this.videoHeight, false)
-		if (getCacheItem(CacheTypes.FlipCamera) != 'false') {
+		this.isCameraFlip = getCacheItem(CacheTypes.FlipCamera) != 'false'
+		if (this.isCameraFlip) {
 			//first time dont call
 			this.flip()
 		}

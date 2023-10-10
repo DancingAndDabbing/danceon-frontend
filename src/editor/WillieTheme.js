@@ -1,3 +1,6 @@
+//this code is added as it is from danceon version 1
+// no modification has been done from new version
+
 export default function WillieTheme(require, exports, module) {
 	exports.isDark = false
 	exports.cssClass = 'ace-willie-custom'

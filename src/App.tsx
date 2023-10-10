@@ -220,6 +220,10 @@ class App extends Component<any, any> {
 		this.videoRef.current.progressBarClick(value)
 	}
 
+	invalidShapeError = async () => {
+		this.editorRef.current.showInvalidShapeError()
+	}
+
 	render() {
 		const {tooltipValue} = this.state
 		return (
@@ -249,9 +253,17 @@ class App extends Component<any, any> {
 								<ExampleTitleForm editorRef={this.editorRef} isVideo={this.state.isVideo} cameraRef={this.cameraRef} videoRef={this.videoRef} />
 								<Editor ref={this.editorRef} onUpdatePoser={this.onUpdatePoser} />
 								{this.state.isVideo ? (
-									<Video videoEvent={this.videoEvent} ref={this.videoRef} cameraSetupCB={this.cameraSetupCB} openRecordingModal={this.openRecordingModal} modelType={this.modelType} supportedModel={this.supportedModel} />
+									<Video
+										videoEvent={this.videoEvent}
+										ref={this.videoRef}
+										cameraSetupCB={this.cameraSetupCB}
+										openRecordingModal={this.openRecordingModal}
+										modelType={this.modelType}
+										supportedModel={this.supportedModel}
+										invalidShapeError={this.invalidShapeError}
+									/>
 								) : (
-									<Camera ref={this.cameraRef} cameraSetupCB={this.cameraSetupCB} modelType={this.modelType} supportedModel={this.supportedModel} />
+									<Camera ref={this.cameraRef} cameraSetupCB={this.cameraSetupCB} modelType={this.modelType} supportedModel={this.supportedModel} invalidShapeError={this.invalidShapeError} />
 								)}
 								<CodeStatus ref={this.codeStatusRef} revertToPreviousCode={this.revertToPreviousCode} />
 							</div>

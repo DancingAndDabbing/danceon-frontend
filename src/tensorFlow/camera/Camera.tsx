@@ -135,7 +135,7 @@ class Camera extends Component<any, any> {
 				const canvas: any = document.getElementById('camera_output')
 				canvas.width = videoWidth
 				canvas.height = videoHeight
-				this.cameraCanvas = new CameraCanvas(canvas)
+				this.cameraCanvas = new CameraCanvas(canvas, this.props.invalidShapeError)
 				this.message = 'preparing detection'
 			}
 		} else {
@@ -173,7 +173,7 @@ class Camera extends Component<any, any> {
 		if (this.detector != null) {
 			this.beginEstimatePosesStats()
 			try {
-				poses = await this.detector.estimatePoses(this.cameraVideo.video, {maxPoses: this.maxPoses, flipHorizontal: false})
+				poses = await this.detector.estimatePoses(this.cameraVideo.video, {maxPoses: this.maxPoses, flipHorizontal: this.cameraCanvas.isCameraFlip})
 			} catch (error) {
 				if (this.detector) {
 					this.detector.dispose()

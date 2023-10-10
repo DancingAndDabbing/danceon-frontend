@@ -112,6 +112,17 @@ class Editor extends Component {
 		}
 	}
 
+	showInvalidShapeError = async () => {
+		this.editor.current.editor.getSession().setAnnotations([
+			{
+				type: 'error',
+				row: 2,
+				column: 2,
+				text: 'Invalid shape'
+			}
+		])
+	}
+
 	createErrorAnnotation(errMess) {
 		return {
 			type: 'error',

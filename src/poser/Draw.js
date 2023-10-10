@@ -22,7 +22,9 @@ import {
 import {CacheTypes, getCacheItem, setCacheItem} from '../utils/LocalStorage'
 
 export class Draw {
-	constructor(props, isCamera) {
+	// isCamera: either draw functions is being used by camera or video. becuase we have to adjust canvas points accordingly
+	//invalidShapeError is an callback function so we can inform to editor that error occurred so please show this error in editor
+	constructor(props, isCamera, invalidShapeError) {
 		this.ctx = props
 		this.isCamera = isCamera
 		this.isFlip = getCacheItem(CacheTypes.FlipCamera) == 'false' ? false : true
@@ -34,12 +36,16 @@ export class Draw {
 		this.videoWidth = 0
 		this.videoHeight = 0
 		this.poseHistory = []
+		this.invalidShapeError = invalidShapeError
 	}
 
+	//we are calling this function incase camera is flipped. from ui settings panel we are storing it in localstorage and getting the value here will
+	///
 	flip() {
 		this.isFlip = this.isCamera ? (getCacheItem(CacheTypes.FlipCamera) == 'false' ? false : true) : false
 	}
 
+	//as soon as camera or video is loaded we are calling this function so draw store the canvas width and height for rest of the flow
 	updateDrawDimension(width, height, videoWidth = 0, videoHeight = 0, isVideo = true) {
 		width = parseFloat(width.toFixed(0))
 		height = parseFloat(height.toFixed(0))
@@ -57,6 +63,7 @@ export class Draw {
 		}
 	}
 
+	// this function takes x,y as coordinates and draw coordiniates accordingly
 	drawCursor(x, y, isCursor, pose) {
 		// window.lastPose = pose
 		if (this.isCamera) {
@@ -105,6 +112,7 @@ export class Draw {
 					}
 				})
 			}
+			// this.ctx.restore()
 			if (pose) {
 				if (!isCursor) {
 					this.ctx.save()
@@ -113,6 +121,7 @@ export class Draw {
 						this.ctx.scale(-1, 1)
 					}
 				}
+				// console.log(pose)
 				pose.keypoints.forEach((p, i) => {
 					let sx = p.x
 					let sy = p.y
@@ -160,11 +169,25 @@ export class Draw {
 				this.ctx.textAlign = 'left'
 				this.ctx.textBaseline = 'middle'
 
+				let tempWidth = 360 / this.ctx.canvas.width
+				if (this.ctx.canvas.width > this.ctx.canvas.height) {
+					//landscape
+					tempWidth = 640 / this.ctx.canvas.width
+				}
 				let xText = _x.toFixed(0)
 				xText = xText <= 0 ? 0 : xText
+				xText = (xText * tempWidth).toFixed(0)
 
+				// 640*480 for landscape
+				// 320*640 for potrait
+				let tempHeight = 640 / this.ctx.canvas.height
+				if (this.ctx.canvas.width > this.ctx.canvas.height) {
+					//landscape
+					tempHeight = 480 / this.ctx.canvas.height
+				}
 				let yText = (this.ctx.canvas.height - _y).toFixed(0)
 				yText = yText <= 0 ? 0 : yText
+				yText = (yText * tempHeight).toFixed(0)
 
 				const text = 'y:' + yText + '\nx:' + xText
 				const lines = text.split('\n')
@@ -289,48 +312,89 @@ export class Draw {
 	}
 
 	draw(targetPose) {
+		let shapeDrawn = false
 		switch (targetPose.what) {
 			case SHAPES.TEXT.toLowerCase():
+				shapeDrawn = true
 				this.drawText(targetPose)
 				break
 			case SHAPES.ARC.toLowerCase():
+				shapeDrawn = true
 				this.drawArc(targetPose)
 				break
 			case SHAPES.CIRCLE.toLowerCase():
+				shapeDrawn = true
 				this.drawCircle(targetPose)
 				break
 			case SHAPES.ELLIPSE.toLowerCase():
+				shapeDrawn = true
 				this.drawEllipse(targetPose)
 				break
 			case SHAPES.LINE.toLowerCase():
+				shapeDrawn = true
 				this.drawLine(targetPose)
 				break
 			case SHAPES.POINT.toLowerCase():
+				shapeDrawn = true
 				this.drawPoint(targetPose)
 				break
 			case SHAPES.QUAD.toLowerCase():
+				shapeDrawn = true
 				this.drawQuad(targetPose)
 				break
 			case SHAPES.RECT.toLowerCase():
+				shapeDrawn = true
 				this.drawRect(targetPose)
 				break
 			case SHAPES.SQUARE.toLowerCase():
+				shapeDrawn = true
 				this.drawSquare(targetPose)
 				break
 			case SHAPES.TRIANGLE.toLowerCase():
+				shapeDrawn = true
 				this.drawTriangle(targetPose)
 				break
 			case SHAPES.CURVE.toLowerCase():
+				shapeDrawn = true
 				this.drawCurve(targetPose)
 				break
 			case SHAPES.BEZIER_CURVE.toLowerCase():
+				shapeDrawn = true
 				this.drawBezierCurve(targetPose)
 				break
 			case SHAPES.HEART.toLowerCase():
+				shapeDrawn = true
 				this.drawHeart(targetPose)
 				break
 			default:
 				break
+		}
+		if (!shapeDrawn) {
+			//we throw invalid shape error in case usee try to enter his own shape,
+			// this.invalidShapeError()
+			if (this.isCamera) {
+				this.ctx.save()
+				if (this.isFlip) {
+					this.ctx.translate(this.ctx.canvas.width, 0)
+					this.ctx.scale(-1, 1)
+				}
+			}
+			let x = this.centerX
+			let y = this.centerY
+			let {_x, _y} = convertOrigin(x, y, this.ctx.canvas.height, this.isFlip ? this.originWidth : null)
+
+			let text = fallbackToDefault('invalid shape')
+			let textSize = fallbackToDefault(targetPose.how.textSize, 32)
+			let textAlign = fallbackToDefault(targetPose.how.textAlign, 'center')
+			let textFont = fallbackToDefault(targetPose.how.textFont, 'Helvetica')
+
+			this.ctx.fillStyle = fallbackToDefault(targetPose.how.fill, 'White')
+			this.ctx.font = `${textSize}px ${textFont}`
+			this.ctx.textAlign = textAlign
+			this.ctx.fillText(text, _x, _y)
+			if (this.isCamera) {
+				this.ctx.restore()
+			}
 		}
 	}
 

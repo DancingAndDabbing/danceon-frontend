@@ -282,11 +282,11 @@ class Video extends Component {
 		if (this.videoCanvas.video.paused) {
 			this.videoCanvas.redrawCtx()
 			this.videoCanvas.drawResults(posesForPauseVideo)
-			this.endEstimatePosesStats()
-			// requestAnimationFrame(this.renderVideoResult)
+			// this.endEstimatePosesStats()
+			requestAnimationFrame(this.renderVideoResult)
 			return
 		}
-		this.beginEstimatePosesStats()
+		// this.beginEstimatePosesStats()
 		const poses = await this.detector.estimatePoses(this.videoCanvas.video, {maxPoses: this.maxPoses, flipHorizontal: false})
 		posesForPauseVideo = poses
 		if (this.videoCanvas) {
@@ -295,7 +295,8 @@ class Video extends Component {
 				this.videoCanvas.drawResults(poses)
 			}
 		}
-		this.endEstimatePosesStats()
+		requestAnimationFrame(this.renderVideoResult)
+		// this.endEstimatePosesStats()
 	}
 
 	beginEstimatePosesStats = async () => {
@@ -342,6 +343,12 @@ class Video extends Component {
 			return
 		}
 		this.videoCanvas.video.currentTime = ((value * this.videoCanvas.video.duration) / 100).toFixed(0)
+		if (this.videoCanvas.mediaRecorder.state === 'paused') {
+			setTimeout(async () => {
+				posesForPauseVideo = await this.detector.estimatePoses(this.videoCanvas.video, {maxPoses: this.maxPoses, flipHorizontal: false})
+				requestAnimationFrame(this.renderVideoResult)
+			}, 500)
+		}
 	}
 
 	volumeButton = async () => {

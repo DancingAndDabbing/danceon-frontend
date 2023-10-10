@@ -11,6 +11,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/json'
 axios.defaults.headers.post['Accept'] = 'application/json'
 axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*'
 
+//pass username and password if user press signup button
 export const doSignUp = async (username, password) => {
 	let response = {}
 	await axios
@@ -26,6 +27,7 @@ export const doSignUp = async (username, password) => {
 	return response
 }
 
+//pass username and password if user press signin button
 export const doLogin = async (username, password) => {
 	let response = {}
 	await axios
