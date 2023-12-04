@@ -311,6 +311,7 @@ export class Draw {
 		}
 	}
 
+	//we are only daring these shapes.. anything else will be consider as error or shape not available
 	draw(targetPose) {
 		let shapeDrawn = false
 		switch (targetPose.what) {
@@ -398,6 +399,7 @@ export class Draw {
 		}
 	}
 
+	//to clear randomg lines drawn at loading time
 	clearRandomLines = async () => {
 		clearInterval(this.randomLinesInterval)
 	}
@@ -407,6 +409,7 @@ export class Draw {
 		this.drawRandomLines(color, message, isCamera)
 	}
 
+	//this function draws random lines during canvas loading
 	drawRandomLines(color, message, isCamera) {
 		this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
 		const targetPose = {what: 'text', text: message, where: {x: this.centerX, y: this.centerY}}
@@ -453,7 +456,7 @@ export class Draw {
 		let x = fallbackToDefault(targetPose.where.x, randomIntFromInterval(0, this.ctx.canvas.width))
 		let y = fallbackToDefault(targetPose.where.y, randomIntFromInterval(0, this.ctx.canvas.height))
 		let {_x, _y} = convertOrigin(x, y, this.ctx.canvas.height, this.isFlip ? this.originWidth : null)
-
+		_x = x
 		let text = fallbackToDefault(targetPose.how.str, 'Words, words, words.')
 		let textSize = fallbackToDefault(targetPose.how.textSize, 32)
 		let textAlign = fallbackToDefault(targetPose.how.textAlign, 'center')
@@ -746,6 +749,7 @@ export class Draw {
 		this.ctx.stroke(curve)
 	}
 
+	//this function draw heart at specfic x and y position
 	drawHeart(targetPose) {
 		const ranndomX = randomIntFromInterval(0, this.ctx.canvas.width)
 		const ranndomY = randomIntFromInterval(0, this.ctx.canvas.height)

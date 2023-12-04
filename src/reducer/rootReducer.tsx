@@ -1,8 +1,10 @@
 /**
- * Redux setup
+ * Default redux setup
  */
 
 import {USER_ALL_EXAMPLES, USER_EXAMPLES, USER_LOGIN, SINGLE_EXAMPLE} from '../actions/authActions'
+
+// we are using 4 points in redux: login, user's examples, all examples and one example to view
 
 const initialState = {
 	login: false,
@@ -15,6 +17,7 @@ const rootReducer = (state = initialState, action) => {
 	switch (action.type) {
 		case USER_LOGIN:
 			return {...state, login: action.payload}
+
 		case USER_EXAMPLES:
 			return {...state, userExamples: action.payload}
 

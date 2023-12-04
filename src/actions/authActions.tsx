@@ -1,5 +1,5 @@
 /**
- * Redux setup
+ * Redux setup to handle user login and exmaples naviagtion once user is logged in.
  */
 export const USER_LOGIN = 'USER_LOGIN'
 export const USER_EXAMPLES = 'USER_EXAMPLES'

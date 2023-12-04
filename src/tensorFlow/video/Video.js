@@ -147,7 +147,7 @@ class Video extends Component {
 			this.props.cameraSetupCB()
 			if (!file) {
 				file = 'default'
-				this.videoCanvas.source.src = '/assets/SFD_Nov.mp4'
+				this.videoCanvas.source.src = '/assets/SFD_Nov.mp4' //this setups SFD_Nov.mp4 as default video to canvas
 			}
 			this.setVideoOnCanvas(false)
 		} catch (e) {
@@ -271,6 +271,8 @@ class Video extends Component {
 		document.querySelector('#recordingNotifier').classList.add('hide')
 		document.querySelector('#top-bar').classList.remove('hide')
 		this.progressBarRef.value = 100
+		this.playVideo() //this line/function plays the video in loop
+
 		//if user switch window or browser and meantime video is finished this function
 		//is invokved and ui does not updated as it was paused somehow so we just set  slider vaule to 100
 	}
@@ -282,11 +284,9 @@ class Video extends Component {
 		if (this.videoCanvas.video.paused) {
 			this.videoCanvas.redrawCtx()
 			this.videoCanvas.drawResults(posesForPauseVideo)
-			// this.endEstimatePosesStats()
 			requestAnimationFrame(this.renderVideoResult)
 			return
 		}
-		// this.beginEstimatePosesStats()
 		const poses = await this.detector.estimatePoses(this.videoCanvas.video, {maxPoses: this.maxPoses, flipHorizontal: false})
 		posesForPauseVideo = poses
 		if (this.videoCanvas) {
@@ -299,26 +299,13 @@ class Video extends Component {
 		// this.endEstimatePosesStats()
 	}
 
-	beginEstimatePosesStats = async () => {
-		this.startInferenceTime = (performance || Date).now()
-	}
-
+	//wait for 30 fps
 	endEstimatePosesStats = async () => {
 		const frameDelay = 1000 / 30
-		// const endInferenceTime = (performance || Date).now()
-		// this.inferenceTimeSum += endInferenceTime - this.startInferenceTime
-		// ++this.numInferences
-		// const panelUpdateMilliseconds = 1000
-		// if (endInferenceTime - this.lastPanelUpdate >= panelUpdateMilliseconds) {
-		// 	// const averageInferenceTime = this.inferenceTimeSum / this.numInferences
-		// 	this.inferenceTimeSum = 0
-		// 	this.numInferences = 0
-		// 	// console.log('current fps is: ' + 1000.0 / averageInferenceTime, 120)
-		// 	this.lastPanelUpdate = endInferenceTime
-		// }
 		setTimeout(requestAnimationFrame(this.renderVideoResult), frameDelay)
 	}
 
+	//this function render the message inside the canvas
 	renderMessage = async () => {
 		if (this.message && this.videoCanvas) {
 			this.videoCanvas.drawLoadingMessage(this.message)
@@ -338,6 +325,7 @@ class Video extends Component {
 		requestAnimationFrame(this.renderProgressBarResult)
 	}
 
+	//if user click on progress bar than this funciton forward the video
 	progressBarClick = async (value) => {
 		if (this.isPreparing) {
 			return
@@ -351,6 +339,7 @@ class Video extends Component {
 		}
 	}
 
+	//this function handles mute and unmute accordingly
 	volumeButton = async () => {
 		if (file == null || !this.detector) {
 			return
@@ -366,6 +355,7 @@ class Video extends Component {
 		}
 	}
 
+	//if user wants to record the video than this function is called
 	recordButton = async () => {
 		if (file == null || !this.detector) {
 			return
@@ -377,6 +367,7 @@ class Video extends Component {
 		}
 	}
 
+	//this is linked function with recordButton.. above function open recording modal and if user says yes recrord it than this fucntion is called
 	recordVideo = async () => {
 		this.recordButtonRef.classList.add('recordingVideo')
 		this.videoCanvas.recordVideo = true
@@ -384,6 +375,8 @@ class Video extends Component {
 		document.querySelector('#recordingNotifier').classList.remove('hide')
 	}
 
+	//if poser is updated and canvas isnt prepared yet than we revert this function
+	//otherwise set the poser value in video canvas
 	onUpdatePoser = async (poser) => {
 		if (this.isPreparing) {
 			if (this.videoCanvas) {
@@ -397,6 +390,7 @@ class Video extends Component {
 		}
 	}
 
+	// simple re-initialize the video setup
 	onChangeModelType = async () => {
 		await this.destroySetup()
 		await this.initSetup()

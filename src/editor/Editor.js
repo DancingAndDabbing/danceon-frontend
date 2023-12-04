@@ -20,10 +20,12 @@ import {KEY_POINT_NOT_TO_USE, POSE_PARTS, POSE_PART_POSITIONS, WHAT_TO_DRAW_WORD
 import {CacheTypes, getCacheItem, setCacheItem} from '../utils/LocalStorage'
 import WillieTheme from './WillieTheme'
 
+//these are 3 global variables to access the specfic action done by user at multiple places
 let poseAutoComplete = false
 let posePositionAutoComplete = false
 let whatAutoComplete = false
 
+//this is require to use same theme as it was in classical mode setup by willie. nothing speical is done here. same code is used
 ace.define('ace/theme/willie_custom', ['require', 'exports', 'module', 'ace/lib/dom'], WillieTheme)
 
 class Editor extends Component {
@@ -44,6 +46,7 @@ class Editor extends Component {
 	}
 
 	componentDidMount() {
+		//completer is hooked inside componentDidMount.. due to this words mapping will be shown to user in popup
 		addCompleter({
 			getCompletions: function (editor, session, pos, prefix, callback) {
 				let wordsToShow = WORD_LIST
@@ -71,6 +74,7 @@ class Editor extends Component {
 		})
 	}
 
+	//if editor values changes than this function is called
 	onChange = async (val) => {
 		const status = await this.parseAndShowErrors(val)
 		if (val.trim().length == 0 && !this.fromSetValueCall && this.editor.current.editor.getSession().curOp.command.name != 'paste') {
@@ -85,12 +89,14 @@ class Editor extends Component {
 		this.currentCode = val
 	}
 
+	//this is undo function
 	revertToPreviousCode = async () => {
 		const currentCode = this.poser.revertToPreviousCode()
 		this.fromSetValueCall = true
 		this.editor.current.editor.getSession().setValue(currentCode.text)
 	}
 
+	//in case user wants to change the font size of editor
 	updateFontSize = async (fontSize) => {
 		this.editor.current.editor.setFontSize(parseInt(fontSize))
 	}
@@ -99,6 +105,7 @@ class Editor extends Component {
 		//todo..if there is code error then show default message
 	}
 
+	//this fucntion take cares of error handling for user
 	parseAndShowErrors = async (currentCode) => {
 		let errAnnotations = []
 		try {
@@ -132,6 +139,7 @@ class Editor extends Component {
 		}
 	}
 
+	//this function return last token from editor code to check either its . or : or something else
 	getlastToken() {
 		let pos = this.editor.current.editor.selection.getCursor()
 		let session = this.editor.current.editor.getSession()
@@ -144,6 +152,7 @@ class Editor extends Component {
 			return false
 		}
 		let lastToken = curTokens[curTokens.length - 1]
+		console.log(lastToken)
 		return lastToken
 	}
 
@@ -151,12 +160,14 @@ class Editor extends Component {
 		this.fromSetValueCall = true
 		const status = await this.parseAndShowErrors(val)
 		this.editor.current.editor.getSession().setValue(val)
-		//todo.do we need to update poser ?.. yes definitely. but why not we added it on revert function
+		//todo... do we need to update poser ?.. yes definitely. but why not we added it on revert function
 		await this.poser.update(val)
 		this.props.onUpdatePoser(this.poser, status, this.poser.declarations.text.replace(/\s/g, '') != this.STARTING_CODE.replace(/\s/g, ''))
 		this.currentCode = val
 	}
 
+	//in case user wants to upload his own declartion for editor we use this function
+	//read file and set its values to editor
 	uploadDeclarations = (newFile) => {
 		newFile
 			.text()
@@ -170,6 +181,7 @@ class Editor extends Component {
 			})
 	}
 
+	//in case user want to downloads its declaration than we call this function
 	downloadDeclarations = () => {
 		try {
 			const currentDec = this.editor.current.editor.getSession().getValue()
@@ -197,7 +209,7 @@ class Editor extends Component {
 				showGutter={true}
 				fontFamily={'Space Mono'}
 				mode="javascript"
-				theme="willie_custom"
+				theme="willie_custom" //same as theme name. we are using willie_custom
 				value={this.STARTING_CODE}
 				onChange={this.onChange}
 				onBlur={(e) => {
@@ -206,7 +218,7 @@ class Editor extends Component {
 				enableLiveAutocompletion={true}
 				enableBasicAutocompletion={true}
 				enableSnippets={true}
-				name="dance_on_editor"
+				name="dance_on_editor" //you can set any name here
 				editorProps={{$blockScrolling: true}}
 				setOptions={{
 					useWorker: false,

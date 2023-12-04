@@ -30,24 +30,22 @@ class CameraCanvas extends Component<any, any> {
 	constructor(props: any, invalidShapeError: any) {
 		super(props)
 		this.poser = null
-		this.ctx = props.getContext('2d')
-		this.draw = new Draw(this.ctx, true, invalidShapeError)
+		this.ctx = props.getContext('2d') //we need 2d context
+		this.draw = new Draw(this.ctx, true, invalidShapeError) //create new object of draw and save its reference and use it for camera life cycle
 		this.container = document.querySelector('#container')
 		this.editorColumn = document.querySelector('#editorColumn')
 		this.dispalySection = document.querySelector('#main')
-		this.skeleton = getCacheItem(CacheTypes.Skeleton) == 'true' ? true : false
-		this.cursor = getCacheItem(CacheTypes.Cursor) == 'true' ? true : false
-		this.cursorPosition = {x: 0, y: 0}
+		this.skeleton = getCacheItem(CacheTypes.Skeleton) == 'true' ? true : false //either we are using skeleton or not
+		this.cursor = getCacheItem(CacheTypes.Cursor) == 'true' ? true : false //either we are showing cursor position or not
+		this.cursorPosition = {x: 0, y: 0} //default cursor position is 0,0
 		this.videoWidth = props.width
 		this.videoHeight = props.height
 		this.draw.updateDrawDimension(this.videoWidth, this.videoHeight, false)
-		this.isCameraFlip = getCacheItem(CacheTypes.FlipCamera) != 'false'
+		this.isCameraFlip = getCacheItem(CacheTypes.FlipCamera) != 'false' //either we are going to flip camera or not
 		if (this.isCameraFlip) {
-			//first time dont call
 			this.flip()
 		}
-
-		this.model = posedetection.SupportedModels.BlazePose
+		this.model = posedetection.SupportedModels.BlazePose //our target model is blazePose
 	}
 
 	flip() {
@@ -60,11 +58,13 @@ class CameraCanvas extends Component<any, any> {
 		this.draw.drawLoadingMessage(message, 'Green')
 	}
 
+	//clear canvas and draw the given video
 	redrawCtx(video: any) {
 		this.ctx.clearRect(0, 0, this.videoWidth, this.videoHeight)
 		this.ctx.drawImage(video, 0, 0, this.videoWidth, this.videoHeight)
 	}
 
+	//clear everything from canvas
 	clearCtx() {
 		this.ctx.clearRect(0, 0, this.videoWidth, this.videoHeight)
 		this.draw.clearRandomLines()

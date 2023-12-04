@@ -10,6 +10,7 @@ export class CameraVideo {
 		this.video = document.getElementById('cameravideo')
 	}
 
+	//this is the return camer object with stream..navigator.mediaDevices.getUserMedia is used for stream
 	static async setup(cameraParam, cameraSetupCB) {
 		if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
 			cameraSetupCB()

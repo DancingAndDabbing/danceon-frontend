@@ -1,5 +1,5 @@
 /**
- * Redux setup
+ * Default redux setup
  */
 
 import {combineReducers} from 'redux'

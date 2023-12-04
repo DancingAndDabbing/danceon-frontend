@@ -12,7 +12,6 @@ class Poser extends Component {
 		this.declarations = {text: '(pose) => [];', func: () => []}
 		this.addWorkingCodeToHistory = this.addWorkingCodeToHistory.bind(this)
 		this.movers = new Movers()
-		// drawFunctions: new DrawFunctions(),
 		this.declarationsHistory = [this.declarations]
 		this.codeChanged = true
 		this.usingOldCode = false
@@ -24,13 +23,13 @@ class Poser extends Component {
 		this.condition = 'starting'
 	}
 
+	//this conver plain text to new Function
 	update = async (d) => {
 		let func
 		try {
 			func = new Function(`return ${d}`.trim())()
 		} catch (err) {
 			if ((this.condition = 'debugging')) this.revertToPreviousCode()
-			// this.callEventListenersIfStateChange('editing')
 			this.usingOldCode = true
 			return false
 		}
@@ -39,6 +38,8 @@ class Poser extends Component {
 		this.codeChanged = true //todo.. not required becuase we called this as callback
 	}
 
+	//if code was changed successfully than update the text and fucntion to working declariton history and save only 100
+	//record for memory purpose
 	addWorkingCodeToHistory() {
 		if (this.codeChanged) {
 			let workingDeclarations = {}
@@ -50,6 +51,7 @@ class Poser extends Component {
 		}
 	}
 
+	//incase user wants to revert to previous code than we serve first saved tet in declaration history
 	revertToPreviousCode() {
 		this.declarations = this.declarationsHistory[0]
 		return this.declarations

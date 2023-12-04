@@ -231,6 +231,7 @@ export const underscore_to_camelCase = (old_word) => {
 	return newWord
 }
 
+//this check either browser is being used as in mobile or in web view
 export const isMobile = () => {
 	const userAgent = window.navigator.userAgent.toLowerCase()
 	const mobileKeywords = ['iphone', 'ipad', 'android', 'blackberry', 'windows phone']
@@ -245,10 +246,12 @@ export const POSE_PARTS = KEY_POINT_TO_USE.map((kp) => {
 	}
 })
 
+//this is universal fucntion to calculate random value form 2 given numbers
 export const randomIntFromInterval = (min, max) => {
 	return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
+//this is universal fucntion to calculate distance from 2 given points in x1,y1 and x2,y2
 export const calculateDistance = (x1, y1, x2, y2) => {
 	const deltaX = x2 - x1
 	const deltaY = y2 - y1

@@ -1,5 +1,5 @@
 /**
- * it initalise tensorflow setup,poseDetection, camera video and camera canvas.
+ * it initalise tensorflow setup, poseDetection, camera video and camera canvas.
  * requestAnimationFrame is used to render each frame
  * isPreparing means setup is complete and we can use camera with ui and editor etc
  */
@@ -237,6 +237,7 @@ class Camera extends Component<any, any> {
 		await this.initSetup()
 	}
 
+	//if camera is still preparing than do nothing
 	canUserAddExample = () => {
 		return !this.isPreparing
 	}

@@ -1,3 +1,5 @@
+//this is the starting point of our app
+
 import React, {Component} from 'react'
 import Navbar from './ui/components/Navbar'
 import Footer from './ui/components/Footer'
@@ -39,12 +41,16 @@ class App extends Component<any, any> {
 	constructor(props: any) {
 		super(props)
 		this.videoEvent = null
+		//these ref are very important.
+		//only one instance of each class will be used because this constructor function will run only once in app life cycle
+		//for more about createRef follow this link https://react.dev/reference/react/createRef#
 		this.navbarRef = React.createRef()
 		this.editorRef = React.createRef()
 		this.cameraRef = React.createRef()
 		this.videoRef = React.createRef()
 		this.myVideoRef = React.createRef()
 		this.codeStatusRef = React.createRef()
+
 		this.isCameraSetup = false
 		this.modelType = getCacheItem(CacheTypes.ModelType)
 		this.supportedModel = getCacheItem(CacheTypes.SupportedModels)
@@ -59,6 +65,7 @@ class App extends Component<any, any> {
 		this.parent = React.createRef()
 	}
 
+	//in case user want to change mode from camera to video or vice versa than we uses this function
 	changeMode = async () => {
 		const cameraSection: any = document.querySelector('#camera_section')
 		const videoSection: any = document.querySelector('#video_section')
@@ -80,6 +87,7 @@ class App extends Component<any, any> {
 		videoSection.classList.remove('output_hide')
 	}
 
+	//once poser is updated from editor we update its value to video or camera object accordingly
 	onUpdatePoser = async (poser: any, status: any, codeChanged: any) => {
 		this.codeStatusRef.current.updateCompileStatus(status, codeChanged)
 		if (this.state.isVideo && this.videoRef.current) {
@@ -155,6 +163,7 @@ class App extends Component<any, any> {
 		// }
 	}
 
+	//once user click on downloadfile we call downloadDeclarations of editor
 	handleDownloadFile = () => {
 		this.editorRef.current.downloadDeclarations()
 	}
@@ -163,6 +172,7 @@ class App extends Component<any, any> {
 		this.editorRef.current.uploadDeclarations(file)
 	}
 
+	//once user click on flip camera from ui this fucntion is called
 	handleFlipCamera = () => {
 		if (this.cameraRef.current) {
 			this.cameraRef.current.cameraCanvas.flip()
@@ -186,6 +196,7 @@ class App extends Component<any, any> {
 		this.props.dispatch(saveSingleExample({}))
 	}
 
+	//this handles the tooltip of video toolbar
 	showTooltip = (e) => {
 		const myVideo = this.myVideoRef.current.duration
 		const progressBar = this.progressBar
@@ -194,10 +205,11 @@ class App extends Component<any, any> {
 		const x = e.nativeEvent.offsetX
 		const percents = x / w
 		const max = parseInt(progressBar.max, 10)
-		tooltip.innerHTML = 'sec:' + ' ' + (percents * myVideo).toFixed(2)
+		tooltip.innerHTML = 'sec:' + ' ' + (percents * myVideo + 0.5).toFixed(2)
 		this.handleMouseMove(Math.floor(percents * max + 0.5))
 	}
 
+	//this handle mouce movement and show its value in ui
 	handleMouseMove = (e) => {
 		const parentRightSpace = this.parent.getBoundingClientRect()
 		const tooltipRightSpace = this.tooltip.getBoundingClientRect()
