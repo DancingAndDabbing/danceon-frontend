@@ -2,23 +2,7 @@
  * it draws all shapes on camera and video canvas. almost all of the code is custom and written from scratch
  */
 
-import {
-	DEFAULT_LINE_WIDTH,
-	DEFAULT_DIAMETER,
-	DEFAULT_LINE_HEIGHT,
-	DEFAULT_RADIUS,
-	INVISIBLE_COLOR,
-	SHAPES,
-	returnCondition,
-	splitArgs,
-	fallbackToDefault,
-	convertToML5Structure,
-	randomIntFromInterval,
-	convertOrigin,
-	convertCursorOrigin,
-	constrain,
-	calculateDistance
-} from '../utils/Helper'
+import {DEFAULT_LINE_WIDTH, DEFAULT_DIAMETER, DEFAULT_LINE_HEIGHT, DEFAULT_RADIUS, INVISIBLE_COLOR, SHAPES, returnCondition, splitArgs, fallbackToDefault, convertToML5Structure, randomIntFromInterval, convertOrigin, convertCursorOrigin, constrain, calculateDistance} from '../utils/Helper'
 import {CacheTypes, getCacheItem, setCacheItem} from '../utils/LocalStorage'
 
 export class Draw {

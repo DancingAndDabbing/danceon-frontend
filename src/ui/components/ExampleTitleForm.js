@@ -1,11 +1,11 @@
-import React, {Component} from 'react'
-import {connect} from 'react-redux'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
 import Loader from './Loader'
-import {loginUser, saveAllExamples, saveSingleExample, saveUserExamples} from '../../actions/authActions'
-import {CacheTypes, getCacheItem, setCacheItem} from '../../utils/LocalStorage'
+import { loginUser, saveAllExamples, saveSingleExample, saveUserExamples } from '../../actions/authActions'
+import { CacheTypes, getCacheItem, setCacheItem } from '../../utils/LocalStorage'
 import ExampleFormModel from '../modals/ExampleFormModel'
-import {doDeleteExamples, doGetExampleById} from '../../apis'
+import { doDeleteExamples, doGetExampleById } from '../../apis'
 import ConfirmationModel from '../modals/ConfirmationModel'
 
 class ExampleTitleForm extends Component {
@@ -33,7 +33,7 @@ class ExampleTitleForm extends Component {
 
 		if (prevProps.singleExample != this.props.singleExample) {
 			const response = this.props.singleExample
-			this.setState({exampleDetails: response, title: response.title ? response.title : '', description: response.description ? response.description : '', exampleId: response.id ? response.id : ''})
+			this.setState({ exampleDetails: response, title: response.title ? response.title : '', description: response.description ? response.description : '', exampleId: response._id ? response._id : '' })
 			if (response.examples) {
 				this.props.editorRef.current.setExampleCodeOnEditor(response.examples)
 			} else {
@@ -43,51 +43,51 @@ class ExampleTitleForm extends Component {
 	}
 
 	updateCompileStatus = async (isCompile, isCodeUpdated) => {
-		this.setState({isCompile: isCompile, step: isCodeUpdated == true ? 2 : 1})
+		this.setState({ isCompile: isCompile, step: isCodeUpdated == true ? 2 : 1 })
 	}
 
 	handleDeleteExample = async () => {
 		if (this.state.exampleId) {
-			this.setState({loading: true, title: ''})
+			this.setState({ loading: true, title: '' })
 			await doDeleteExamples(this.state.exampleId)
 
 			this.props.dispatch(saveSingleExample({}))
 
 			let updatedExample = this.props.userExamples.examples.filter((example) => {
-				return example.id !== this.state.exampleId && example.title
+				return example._id !== this.state.exampleId && example.title
 			})
 
 			let updatedAllExample = this.props.allExamples.examples.filter((example) => {
-				return example.id !== this.state.exampleId && example.title
+				return example._id !== this.state.exampleId && example.title
 			})
 
-			this.props.dispatch(saveUserExamples({examples: updatedExample, totalRecords: this.props.userExamples.totalRecords - 1 > 0 ? this.props.userExamples.totalRecords - 1 : 0, page: this.props.userExamples.page}))
-			this.props.dispatch(saveAllExamples({examples: updatedAllExample, totalRecords: this.props.allExamples.totalRecords - 1 > 0 ? this.props.allExamples.totalRecords - 1 : 0, page: this.props.allExamples.page}))
-			this.setState({title: '', loading: false, deleteExampleModel: false})
+			this.props.dispatch(saveUserExamples({ examples: updatedExample, totalRecords: this.props.userExamples.totalRecords - 1 > 0 ? this.props.userExamples.totalRecords - 1 : 0, page: this.props.userExamples.page }))
+			this.props.dispatch(saveAllExamples({ examples: updatedAllExample, totalRecords: this.props.allExamples.totalRecords - 1 > 0 ? this.props.allExamples.totalRecords - 1 : 0, page: this.props.allExamples.page }))
+			this.setState({ title: '', loading: false, deleteExampleModel: false })
 		}
 	}
 
 	render() {
-		const {loading, exampleDetails, deleteExampleModel} = this.state
+		const { loading, exampleDetails, deleteExampleModel } = this.state
 		return this.props.login ? (
 			<div className="field is-grouped top_ui_gap">
 				<Loader loading={loading} />
 
 				<div className="field top_input">
 					<div className="control">
-						<input className="input is-success " type="text" placeholder="Enter title" name="title" id="title" value={this.state.title} onChange={(e) => this.setState({title: e.target.value})} />
+						<input className="input is-success " type="text" placeholder="Enter title" name="title" id="title" value={this.state.title} onChange={(e) => this.setState({ title: e.target.value })} />
 					</div>
 				</div>
 
 				<div className="field is-grouped">
 					<div className="control">
-						<button className="button is-link" onClick={() => this.setState({openModel: true})}>
+						<button className="button is-link" onClick={() => this.setState({ openModel: true })}>
 							Save
 						</button>
 					</div>
 					{exampleDetails.title && JSON.parse(getCacheItem(CacheTypes.UserData)).admin ? (
 						<div className="">
-							<button className="button is-link is-light" onClick={() => this.setState({deleteExampleModel: true})}>
+							<button className="button is-link is-light" onClick={() => this.setState({ deleteExampleModel: true })}>
 								Delete
 							</button>
 						</div>
@@ -95,7 +95,7 @@ class ExampleTitleForm extends Component {
 						exampleDetails.title &&
 						exampleDetails.userId == JSON.parse(getCacheItem(CacheTypes.UserData)).id && (
 							<div className="">
-								<button className="button is-link is-light" onClick={() => this.setState({deleteExampleModel: true})}>
+								<button className="button is-link is-light" onClick={() => this.setState({ deleteExampleModel: true })}>
 									Delete
 								</button>
 							</div>
@@ -106,7 +106,7 @@ class ExampleTitleForm extends Component {
 				{this.state.openModel === true && (
 					<ExampleFormModel
 						closeModal={(e) => {
-							this.setState({openModel: false})
+							this.setState({ openModel: false })
 						}}
 						editorRef={this.props.editorRef}
 						isVideo={this.props.isVideo}
@@ -116,7 +116,7 @@ class ExampleTitleForm extends Component {
 					/>
 				)}
 				{deleteExampleModel && (
-					<ConfirmationModel closeModal={() => this.setState({deleteExampleModel: false})} title={'Delete Example ?'} body={'Are you sure you want to delete this example ?'} onDelete={this.handleDeleteExample} deleteModel={true} />
+					<ConfirmationModel closeModal={() => this.setState({ deleteExampleModel: false })} title={'Delete Example ?'} body={'Are you sure you want to delete this example ?'} onDelete={this.handleDeleteExample} deleteModel={true} />
 				)}
 			</div>
 		) : null

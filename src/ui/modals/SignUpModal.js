@@ -2,13 +2,13 @@
  * it renders the signup popup and communicates with the server via the doLogin function present in APIs.
  */
 
-import React, {Component} from 'react'
-import {connect} from 'react-redux'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
-import {doSignUp} from '../../apis'
+import { doSignUp } from '../../apis'
 import Loader from '../components/Loader'
-import {CacheTypes, getCacheItem, setCacheItem} from '../../utils/LocalStorage'
-import {loginUser} from '../../actions/authActions'
+import { CacheTypes, getCacheItem, setCacheItem } from '../../utils/LocalStorage'
+import { loginUser } from '../../actions/authActions'
 
 class SignUpModal extends Component {
 	constructor(props) {
@@ -27,24 +27,23 @@ class SignUpModal extends Component {
 	}
 
 	handleSubmit = async () => {
-		this.setState({loading: true})
+		this.setState({ loading: true })
 		let response = await doSignUp(this.state.username, this.state.password)
-		if (response.data && response.data.username) {
-			response = response.data
-			setCacheItem(CacheTypes.UserData, JSON.stringify({username: response.username, id: response.id, admin: response.admin}))
+		if (response && response.username) {
+			setCacheItem(CacheTypes.UserData, JSON.stringify({ username: response.username, id: response._id, admin: response.admin }))
 			this.props.dispatch(loginUser(true))
 			this.props.closeSignUpModal()
 		} else {
 			if (response.success == false) {
-				this.setState({loading: false, error: true, signUpError: response.message})
+				this.setState({ loading: false, error: true, signUpError: response.message })
 			} else {
-				this.setState({loading: false, error: true, signUpError: ''})
+				this.setState({ loading: false, error: true, signUpError: '' })
 			}
 		}
 	}
 
 	render() {
-		const {loading, error, signUpError} = this.state
+		const { loading, error, signUpError } = this.state
 		return (
 			<div class="modal is-active" id="signup">
 				<Loader loading={loading} />
@@ -57,7 +56,7 @@ class SignUpModal extends Component {
 								<div class="field">
 									<label class="label">Username</label>
 									<div class="control has-icons-left has-icons-right">
-										<input class="input is-success" type="text" placeholder="Enter username" name="username" id="uname" required="" onChange={(e) => this.setState({username: e.target.value})} />
+										<input class="input is-success" type="text" placeholder="Enter username" name="username" id="uname" required="" onChange={(e) => this.setState({ username: e.target.value })} />
 										<span class="icon is-small is-left">
 											<i class="fas fa-user"></i>
 										</span>
@@ -71,7 +70,7 @@ class SignUpModal extends Component {
 								<div class="field">
 									<label class="label">Password</label>
 									<div class="control has-icons-left has-icons-right">
-										<input class="input is-success" type="text" placeholder="Enter password" name="password" id="psw" required="" onChange={(e) => this.setState({password: e.target.value})} />
+										<input class="input is-success" type="text" placeholder="Enter password" name="password" id="psw" required="" onChange={(e) => this.setState({ password: e.target.value })} />
 										<span class="icon is-small is-left">
 											<i class="fas fa-user"></i>
 										</span>
@@ -80,7 +79,7 @@ class SignUpModal extends Component {
 										</span>
 									</div>
 								</div>
-								{error && <div style={{color: 'red', marginBottom: '0.5rem'}}>{signUpError ? signUpError : 'Signup Failed'}</div>}
+								{error && <div style={{ color: 'red', marginBottom: '0.5rem' }}>{signUpError ? signUpError : 'Signup Failed'}</div>}
 								<div class="field is-grouped">
 									<div class="control">
 										<button class="button is-link" onClick={this.handleSubmit}>

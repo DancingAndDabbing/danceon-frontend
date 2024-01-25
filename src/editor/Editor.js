@@ -152,7 +152,6 @@ class Editor extends Component {
 			return false
 		}
 		let lastToken = curTokens[curTokens.length - 1]
-		console.log(lastToken)
 		return lastToken
 	}
 
@@ -177,7 +176,7 @@ class Editor extends Component {
 			})
 			.catch((e) => {
 				console.log(e)
-				alert('Hmmmm. something wrong with the code you uploaded...')
+				alert('Something is wrong with the code you uploaded')
 			})
 	}
 
@@ -196,7 +195,7 @@ class Editor extends Component {
 			window.URL.revokeObjectURL(url)
 		} catch (e) {
 			console.log(e)
-			alert('Hmmm. Something wrong downloading your code!')
+			alert('Something went wrong while downloading your code!')
 		}
 	}
 

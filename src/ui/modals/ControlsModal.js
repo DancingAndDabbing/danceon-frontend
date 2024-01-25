@@ -186,10 +186,10 @@ class ControlsModal extends Component {
 												</div>
 											</div>
 										</div>
-										<div className="field">
+										{/* <div className="field">
 											<input id="flipCamera" checked={this.state.flipCamera} type="checkbox" onChange={this.handleFlipCamera} name="flipCamera" className="switch is-rounded is-outlined" />
 											<label htmlFor="flipCamera">flip camera</label>
-										</div>
+										</div> */}
 									</div>
 								</div>
 							</div>

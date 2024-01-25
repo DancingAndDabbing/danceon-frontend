@@ -2,13 +2,13 @@
  * it renders the login popup and communicates with the server via the doLogin function present in APIs.
  */
 
-import React, {Component} from 'react'
-import {connect, useDispatch} from 'react-redux'
+import React, { Component } from 'react'
+import { connect, useDispatch } from 'react-redux'
 
-import {doLogin} from '../../apis'
+import { doLogin } from '../../apis'
 import Loader from '../components/Loader'
-import {loginUser} from '../../actions/authActions'
-import {CacheTypes, getCacheItem, setCacheItem} from '../../utils/LocalStorage'
+import { loginUser } from '../../actions/authActions'
+import { CacheTypes, getCacheItem, setCacheItem } from '../../utils/LocalStorage'
 
 class LoginModal extends Component {
 	constructor(props) {
@@ -26,19 +26,19 @@ class LoginModal extends Component {
 	}
 
 	handleSubmit = async () => {
-		this.setState({loading: true})
+		this.setState({ loading: true })
 		const response = await doLogin(this.state.username, this.state.password)
 		if (response && response.username) {
-			setCacheItem(CacheTypes.UserData, JSON.stringify({username: response.username, id: response.id, admin: response.admin}))
+			setCacheItem(CacheTypes.UserData, JSON.stringify({ username: response.username, id: response._id, admin: response.admin }))
 			this.props.loginUser(true)
 			this.props.closeLoginModal()
 		} else {
-			this.setState({loading: false, error: true})
+			this.setState({ loading: false, error: true })
 		}
 	}
 
 	render() {
-		const {loading, error} = this.state
+		const { loading, error } = this.state
 
 		return (
 			<div className="modal is-active" id="login">
@@ -60,7 +60,7 @@ class LoginModal extends Component {
 											name="username"
 											id="username"
 											required=""
-											onChange={(e) => this.setState({username: e.target.value, error: false})}
+											onChange={(e) => this.setState({ username: e.target.value, error: false })}
 										/>
 										<span className="icon is-small is-left">
 											<i className="fas fa-user"></i>
@@ -82,7 +82,7 @@ class LoginModal extends Component {
 											name="password"
 											id="password"
 											required=""
-											onChange={(e) => this.setState({password: e.target.value, error: false})}
+											onChange={(e) => this.setState({ password: e.target.value, error: false })}
 										/>
 										<span className="icon is-small is-left">
 											<i className="fas fa-user"></i>
@@ -92,7 +92,7 @@ class LoginModal extends Component {
 										</span>
 									</div>
 								</div>
-								{error && <div style={{color: 'red', marginBottom: '0.5rem'}}>Login failed</div>}
+								{error && <div style={{ color: 'red', marginBottom: '0.5rem' }}>Login failed</div>}
 								<div className="field is-grouped">
 									<div className="control">
 										<button

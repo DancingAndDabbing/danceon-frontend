@@ -45,7 +45,7 @@ class Poser extends Component {
 			let workingDeclarations = {}
 			workingDeclarations.text = this.declarations.text
 			workingDeclarations.func = this.declarations.func
-			this.declarationsHistory.unshift(workingDeclarations) //todo..purpose of this?why 100?
+			this.declarationsHistory.unshift(workingDeclarations)
 			this.declarationsHistory.length = Math.min(this.declarationsHistory.length, 100)
 			this.codeChanged = false
 		}

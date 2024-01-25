@@ -17,41 +17,13 @@ export const SCORE_THRESHOLD = 0.65
 
 export const DECIMAL_THRESHOLD = 5
 
-export const KEY_POINT_TO_USE = [
-	'nose',
-	'left_eye',
-	'right_eye',
-	'left_ear',
-	'right_ear',
-	'mouth_left',
-	'mouth_right',
-	'left_shoulder',
-	'right_shoulder',
-	'left_elbow',
-	'right_elbow',
-	'left_wrist',
-	'right_wrist',
-	'left_pinky',
-	'right_pinky',
-	'left_index',
-	'right_index',
-	'left_thumb',
-	'right_thumb',
-	'left_hip',
-	'right_hip',
-	'left_knee',
-	'right_knee',
-	'left_ankle',
-	'right_ankle',
-	'left_heel',
-	'right_heel',
-	'left_foot_index',
-	'right_foot_index'
-]
+export const KEY_POINT_TO_USE = ['nose', 'left_eye', 'right_eye', 'left_ear', 'right_ear', 'mouth_left', 'mouth_right', 'left_shoulder', 'right_shoulder', 'left_elbow', 'right_elbow', 'left_wrist', 'right_wrist', 'left_pinky', 'right_pinky', 'left_index', 'right_index', 'left_thumb', 'right_thumb', 'left_hip', 'right_hip', 'left_knee', 'right_knee', 'left_ankle', 'right_ankle', 'left_heel', 'right_heel', 'left_foot_index', 'right_foot_index']
 
 // export const WHAT_TO_USE = ['circle', 'text', 'arc', 'ellipse', 'line', 'point', 'quad', 'rect', 'square', 'triangle', 'curve', 'heart']
 
 export const KEY_POINT_NOT_TO_USE = ['left_eye_inner', 'left_eye_outer', 'right_eye_inner', 'right_eye_outer']
+
+export const IS_ORIGIN_CONVERTED = false
 
 export const SHAPES = {
 	CIRCLE: 'circle',
@@ -128,24 +100,41 @@ export const countDecimalPlaces = (number) => {
 }
 
 export const convertOrigin = (x, y, height, width) => {
-	//if its camera than pass width
-	if (countDecimalPlaces(x) <= DECIMAL_THRESHOLD && countDecimalPlaces(y) <= DECIMAL_THRESHOLD) {
-		//user type both x/y manually
-		return {_x: width ? width - x : x, _y: height - y}
-	} else if (countDecimalPlaces(x) <= DECIMAL_THRESHOLD && countDecimalPlaces(y) > DECIMAL_THRESHOLD) {
-		//user type only x manually and y by selection
-		return {_x: width ? width - x : x, _y: y}
-	} else if (countDecimalPlaces(x) > DECIMAL_THRESHOLD && countDecimalPlaces(y) <= DECIMAL_THRESHOLD) {
-		//user type x by selection and y manually
-		return {_x: x, _y: height - y}
+	if (IS_ORIGIN_CONVERTED) {
+		//if its camera than pass width
+		if (countDecimalPlaces(x) <= DECIMAL_THRESHOLD && countDecimalPlaces(y) <= DECIMAL_THRESHOLD) {
+			//user type both x/y manually
+			return {_x: width ? width - x : x, _y: height - y}
+		} else if (countDecimalPlaces(x) <= DECIMAL_THRESHOLD && countDecimalPlaces(y) > DECIMAL_THRESHOLD) {
+			//user type only x manually and y by selection
+			return {_x: width ? width - x : x, _y: y}
+		} else if (countDecimalPlaces(x) > DECIMAL_THRESHOLD && countDecimalPlaces(y) <= DECIMAL_THRESHOLD) {
+			//user type x by selection and y manually
+			return {_x: x, _y: height - y}
+		} else {
+			//both selection
+			return {_x: x, _y: y}
+		}
 	} else {
-		//both selection
-		return {_x: x, _y: y}
+		if (countDecimalPlaces(x) <= DECIMAL_THRESHOLD && countDecimalPlaces(y) <= DECIMAL_THRESHOLD) {
+			return {_x: width ? width - x : x, _y: y}
+		} else if (countDecimalPlaces(x) <= DECIMAL_THRESHOLD && countDecimalPlaces(y) > DECIMAL_THRESHOLD) {
+			return {_x: width ? width - x : x, _y: y}
+		} else if (countDecimalPlaces(x) > DECIMAL_THRESHOLD && countDecimalPlaces(y) <= DECIMAL_THRESHOLD) {
+			return {_x: x, _y: y}
+		} else {
+			return {_x: x, _y: y}
+		}
+		// or return {_x: x, _y: y}
 	}
 }
 
 export const convertCursorOrigin = (x, y, height, width) => {
-	return {_x: width ? (width - x).toFixed(2) : x, _y: parseFloat((height - y).toFixed(2))}
+	if (IS_ORIGIN_CONVERTED) {
+		return {_x: width ? (width - x).toFixed(2) : x, _y: parseFloat((height - y).toFixed(2))}
+	} else {
+		return {_x: width ? (width - x).toFixed(2) : x, _y:  parseFloat(Number(y).toFixed(2))}
+	}
 }
 
 export const constrain = (value, min, max) => {

@@ -39,6 +39,9 @@ const getDefaultValue = (type) => {
 }
 
 export const getCacheItem = (type) => {
+	if (type == CacheTypes.FlipCamera) {
+		return 'false'
+	}
 	const item = localStorage.getItem(type)
 	return item ? item : getDefaultValue(type)
 }
