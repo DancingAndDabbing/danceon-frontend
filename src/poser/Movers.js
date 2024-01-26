@@ -30,11 +30,11 @@ class Mover {
 			y4: randomIntFromInterval(0, this.height)
 		})
 
-		this.velocityX = fallbackToDefault(this.points.velocityX, Math.random(-2, 2)) * -1
-		this.velocityY = fallbackToDefault(this.points.velocityY, -10) * -1
+		this.velocityX = fallbackToDefault(this.points.velocityX, Math.random(-2, 2))
+		this.velocityY = fallbackToDefault(this.points.velocityY, -10)
 
-		this.accelerationX = fallbackToDefault(this.where.accelerationX, 0) * -1
-		this.accelerationY = fallbackToDefault(this.where.accelerationY, 0.5) * -1
+		this.accelerationX = fallbackToDefault(this.where.accelerationX, 0)
+		this.accelerationY = fallbackToDefault(this.where.accelerationY, 0.5)
 
 		// These don't belong in the args going forward as they are not
 		// present in the static counterparts
