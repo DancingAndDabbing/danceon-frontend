@@ -2,7 +2,7 @@
  * it draws all shapes on camera and video canvas. almost all of the code is custom and written from scratch
  */
 
-import {DEFAULT_LINE_WIDTH, DEFAULT_DIAMETER, DEFAULT_LINE_HEIGHT, DEFAULT_RADIUS, INVISIBLE_COLOR, SHAPES, returnCondition, splitArgs, fallbackToDefault, convertToML5Structure, randomIntFromInterval, convertOrigin, convertCursorOrigin, constrain, calculateDistance} from '../utils/Helper'
+import {IS_ORIGIN_CONVERTED, DEFAULT_LINE_WIDTH, DEFAULT_DIAMETER, DEFAULT_LINE_HEIGHT, DEFAULT_RADIUS, INVISIBLE_COLOR, SHAPES, returnCondition, splitArgs, fallbackToDefault, convertToML5Structure, randomIntFromInterval, convertOrigin, convertCursorOrigin, constrain, calculateDistance} from '../utils/Helper'
 import {CacheTypes, getCacheItem, setCacheItem} from '../utils/LocalStorage'
 
 export class Draw {
@@ -145,7 +145,11 @@ export class Draw {
 				this.ctx.lineWidth = DEFAULT_LINE_WIDTH
 
 				const rect = new Path2D()
-				rect.rect(constrain(x2, 0, this.ctx.canvas.width - w), constrain(this.ctx.canvas.height - y2, 0, this.ctx.canvas.height - 94 * videoRatio), w, h)
+				if (IS_ORIGIN_CONVERTED) {
+					rect.rect(constrain(x2, 0, this.ctx.canvas.width - w), constrain(this.ctx.canvas.height - y2, 0, this.ctx.canvas.height - 94 * videoRatio), w, h)
+				} else {
+					rect.rect(constrain(x2, 0, this.ctx.canvas.width - w), constrain(y2, 0, this.ctx.canvas.height - 94 * videoRatio), w, h)
+				}
 				this.ctx.fill(rect)
 
 				this.ctx.fillStyle = 'white'
@@ -169,7 +173,10 @@ export class Draw {
 					//landscape
 					tempHeight = 480 / this.ctx.canvas.height
 				}
-				let yText = (this.ctx.canvas.height - _y).toFixed(0)
+				let yText =  (_y).toFixed(0)
+				if (IS_ORIGIN_CONVERTED) {
+					yText = (this.ctx.canvas.height - _y).toFixed(0)
+				}
 				yText = yText <= 0 ? 0 : yText
 				yText = (yText * tempHeight).toFixed(0)
 
@@ -177,22 +184,17 @@ export class Draw {
 				const lines = text.split('\n')
 				lines.forEach((line, index) => {
 					const yConstrain = index == 1 ? this.ctx.canvas.height - 76 * videoRatio : this.ctx.canvas.height - 41 * videoRatio
-					this.ctx.fillText(line, constrain(x2 + 20, 0, this.ctx.canvas.width - w), constrain(parseFloat(this.ctx.canvas.height - y2) + 47 * videoRatio - index * 35 * videoRatio, 0, yConstrain))
+					if (IS_ORIGIN_CONVERTED) {
+						this.ctx.fillText(line, constrain(x2 + 20, 0, this.ctx.canvas.width - w), constrain(parseFloat(this.ctx.canvas.height - y2) + 47 * videoRatio - index * 35 * videoRatio, 0, yConstrain))
+					} else {
+						this.ctx.fillText(line, constrain(x2 + 20, 0, this.ctx.canvas.width - w), constrain(parseFloat(y2) + 47 * videoRatio - index * 35 * videoRatio, 0, yConstrain))
+					}
 				})
 			}
 			if (pose) {
 				pose.keypoints.forEach((p, i) => {
 					let sx = p.x
 					let sy = p.y
-
-					// this.ctx.fillStyle = 'rgba(30, 30, 30, 0.5)'
-					// this.ctx.strokeStyle = 'rgba(30, 30, 30, 0.5)'
-					// this.ctx.lineWidth = DEFAULT_LINE_WIDTH
-
-					// const rect = new Path2D()
-					// rect.rect(constrain(x2, 0, this.ctx.canvas.width - w), constrain(parseFloat(this.ctx.canvas.height - y2) - 50 * videoRatio, 0, this.ctx.canvas.height - 120 * videoRatio), w, h)
-					// this.ctx.fill(rect)
-
 					if (calculateDistance(_x, _y, sx, sy) < 8) {
 						this.ctx.fillStyle = 'white'
 						this.ctx.font = `${32 * videoRatio + 'px Arial'}`

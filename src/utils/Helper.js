@@ -23,6 +23,28 @@ export const KEY_POINT_TO_USE = ['nose', 'left_eye', 'right_eye', 'left_ear', 'r
 
 export const KEY_POINT_NOT_TO_USE = ['left_eye_inner', 'left_eye_outer', 'right_eye_inner', 'right_eye_outer']
 
+/*
+Origin Shift Issue
+
+if you add 100 in pose.nose.x it should go to right side
+if you minus 100 from pose.nose.x it should go to left side
+
+if you add 100 in pose.nose.y it should go to up side
+if you subtract 100 from pose.nose.x it should go down side
+
+but in current code origin is masked to bottom left and its not handling +, - operator as per the origin change.
+
+To fix this we can do this stuff:
+
+Introduce some special operator for + and - and these operators will handle + as - and - as +
+or
+Implement something like where_addition
+
+where: {x:pose.nose.x, y:pose.nose.y}
+where_addition: {x:10, y:10}
+
+now you can manipulate the logic for pose.nose.x+10  easily as per origin change
+*/
 export const IS_ORIGIN_CONVERTED = false
 
 export const SHAPES = {
