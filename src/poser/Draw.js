@@ -157,6 +157,7 @@ export class Draw {
 				this.ctx.textAlign = 'left'
 				this.ctx.textBaseline = 'middle'
 
+				/*
 				let tempWidth = 360 / this.ctx.canvas.width
 				if (this.ctx.canvas.width > this.ctx.canvas.height) {
 					//landscape
@@ -179,8 +180,10 @@ export class Draw {
 				}
 				yText = yText <= 0 ? 0 : yText
 				yText = (yText * tempHeight).toFixed(0)
-
 				const text = 'y:' + yText + '\nx:' + xText
+				*/
+				//uncomment above lines in case we have to do downscaling of videos
+				const text = 'y:' + _y + '\nx:' + _x
 				const lines = text.split('\n')
 				lines.forEach((line, index) => {
 					const yConstrain = index == 1 ? this.ctx.canvas.height - 76 * videoRatio : this.ctx.canvas.height - 41 * videoRatio
