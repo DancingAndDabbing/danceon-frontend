@@ -3,9 +3,9 @@
  * willie_custom theme is used as it is
  * : and . are used for auto compeltors
  */
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import AceEditor from 'react-ace'
-import {addCompleter} from 'ace-builds/src-noconflict/ext-language_tools'
+import { addCompleter } from 'ace-builds/src-noconflict/ext-language_tools'
 
 import * as esprima from 'esprima'
 
@@ -17,7 +17,7 @@ import ace from 'ace-builds/src-noconflict/ace'
 
 import Poser from '../poser/Poser'
 import {KEY_POINT_NOT_TO_USE, POSE_PARTS, POSE_PART_POSITIONS, WHAT_TO_DRAW_WORDS, WORD_LIST} from '../utils/Helper'
-import {CacheTypes, getCacheItem, setCacheItem} from '../utils/LocalStorage'
+import {CacheTypes, getCacheItem, removeCacheItem, setCacheItem} from '../utils/LocalStorage'
 import WillieTheme from './WillieTheme'
 
 //these are 3 global variables to access the specfic action done by user at multiple places
@@ -34,7 +34,7 @@ class Editor extends Component {
 		this.editor = React.createRef()
 		this.poser = new Poser()
 		this.fontSize = getCacheItem(CacheTypes.Font)
-		this.STARTING_CODE = `(pose) => [
+		this.STARTING_CODE = getCacheItem(CacheTypes.CurrentExampleCode) && JSON.parse(getCacheItem(CacheTypes.CurrentExampleCode)) != "(pose) => [\n\n];" ? JSON.parse(getCacheItem(CacheTypes.CurrentExampleCode)) : `(pose) => [
 
 ];` //keep it as it is for farmatting only
 		this.fromSetValueCall = false
@@ -72,6 +72,9 @@ class Editor extends Component {
 				callback(null, comp)
 			}
 		})
+		if (getCacheItem(CacheTypes.CurrentExampleCode) && JSON.parse(getCacheItem(CacheTypes.CurrentExampleCode)) != "(pose) => [\n\n];") {
+			this.poser.update(JSON.parse(getCacheItem(CacheTypes.CurrentExampleCode)))
+		}
 	}
 
 	//if editor values changes than this function is called
@@ -86,6 +89,15 @@ class Editor extends Component {
 		await this.poser.update(val)
 		this.props.onUpdatePoser(this.poser, status, this.poser.declarations.text.replace(/\s/g, '') != this.STARTING_CODE.replace(/\s/g, ''))
 		this.fromSetValueCall = false
+
+		let getCurrentExampleCode = getCacheItem(CacheTypes.CurrentExampleCode)
+
+		if (val && val != this.STARTING_CODE && val != getCurrentExampleCode) {
+			removeCacheItem(CacheTypes.PrevExampleCode)
+			removeCacheItem(CacheTypes.CurrentExampleCode)
+			setCacheItem(CacheTypes.PrevExampleCode, getCurrentExampleCode)
+			setCacheItem(CacheTypes.CurrentExampleCode, JSON.stringify(val))
+		}
 		this.currentCode = val
 	}
 

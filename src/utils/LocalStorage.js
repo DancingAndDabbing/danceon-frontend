@@ -13,7 +13,9 @@ export const CacheTypes = Object.freeze({
 	Skeleton: 'Skeleton',
 	UserData: 'UserData',
 	FlipCamera: 'FlipCamera',
-	ThreeD: 'ThreeD'
+	ThreeD: 'ThreeD',
+	PrevExampleCode: 'PrevExampleCode',
+	CurrentExampleCode: 'CurrentExampleCode'
 })
 
 const getDefaultValue = (type) => {
