@@ -55,7 +55,8 @@ window.random = function (min, max) {
 	const randomDecimal = Math.random()
 	const randomInRange = randomDecimal * (max - min)
 	const result = randomInRange + min
-	return result.toFixed(2)
+	// return result.toFixed(2) // toFixed(2) removed becuase + does not works in psoe values like pose.nose.x..so we need to keep any eye on it
+	return result
 }
 
 window.cos = function (value) {

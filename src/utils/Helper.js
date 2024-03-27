@@ -155,7 +155,7 @@ export const convertCursorOrigin = (x, y, height, width) => {
 	if (IS_ORIGIN_CONVERTED) {
 		return {_x: width ? (width - x).toFixed(2) : x, _y: parseFloat((height - y).toFixed(2))}
 	} else {
-		return {_x: width ? (width - x).toFixed(2) : x, _y:  parseFloat(Number(y).toFixed(2))}
+		return {_x: width ? (width - x).toFixed(2) : x, _y: parseFloat(Number(y).toFixed(2))}
 	}
 }
 

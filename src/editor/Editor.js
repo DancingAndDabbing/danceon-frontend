@@ -3,9 +3,9 @@
  * willie_custom theme is used as it is
  * : and . are used for auto compeltors
  */
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import AceEditor from 'react-ace'
-import { addCompleter } from 'ace-builds/src-noconflict/ext-language_tools'
+import {addCompleter} from 'ace-builds/src-noconflict/ext-language_tools'
 
 import * as esprima from 'esprima'
 
@@ -34,7 +34,10 @@ class Editor extends Component {
 		this.editor = React.createRef()
 		this.poser = new Poser()
 		this.fontSize = getCacheItem(CacheTypes.Font)
-		this.STARTING_CODE = getCacheItem(CacheTypes.CurrentExampleCode) && JSON.parse(getCacheItem(CacheTypes.CurrentExampleCode)) != "(pose) => [\n\n];" ? JSON.parse(getCacheItem(CacheTypes.CurrentExampleCode)) : `(pose) => [
+		this.STARTING_CODE =
+			getCacheItem(CacheTypes.CurrentExampleCode) && JSON.parse(getCacheItem(CacheTypes.CurrentExampleCode)) != '(pose) => [\n\n];'
+				? JSON.parse(getCacheItem(CacheTypes.CurrentExampleCode))
+				: `(pose) => [
 
 ];` //keep it as it is for farmatting only
 		this.fromSetValueCall = false
@@ -72,7 +75,7 @@ class Editor extends Component {
 				callback(null, comp)
 			}
 		})
-		if (getCacheItem(CacheTypes.CurrentExampleCode) && JSON.parse(getCacheItem(CacheTypes.CurrentExampleCode)) != "(pose) => [\n\n];") {
+		if (getCacheItem(CacheTypes.CurrentExampleCode) && JSON.parse(getCacheItem(CacheTypes.CurrentExampleCode)) != '(pose) => [\n\n];') {
 			this.poser.update(JSON.parse(getCacheItem(CacheTypes.CurrentExampleCode)))
 		}
 	}
