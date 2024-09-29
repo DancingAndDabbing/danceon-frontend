@@ -179,7 +179,7 @@ class Camera extends Component<any, any> {
 					this.detector.dispose()
 					this.detector = null
 				}
-				console.log('camera 2' + error)
+				console.log('camera:: ' + error)
 			}
 			this.endEstimatePosesStats()
 		}
@@ -213,10 +213,9 @@ class Camera extends Component<any, any> {
 
 	renderMessage = async () => {
 		if (this.message && this.cameraCanvas) {
-			console.log('camera renderMessage')
 			this.cameraCanvas.drawLoadingMessage(this.message)
 		} else {
-			console.log('camera renderMessage failed')
+			// console.log('camera renderMessage failed')
 		}
 		this.messageAnimationFrameId = requestAnimationFrame(this.renderMessage)
 	}

@@ -26,7 +26,6 @@ window._y = function (value) {
 
 window.videoTime = 0
 window.video.time = function () {
-	console.log(window.videoTime)
 	return window.videoTime
 }
 

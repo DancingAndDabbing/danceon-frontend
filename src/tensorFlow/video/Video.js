@@ -120,7 +120,7 @@ class Video extends Component {
 			}
 			this.previousPoser = null
 		} catch (error) {
-			console.log('video 1' + error)
+			console.log('video error:: ' + error)
 		}
 	}
 
