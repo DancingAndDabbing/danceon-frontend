@@ -120,7 +120,7 @@ class Video extends Component {
 			}
 			this.previousPoser = null
 		} catch (error) {
-			console.log('video error:: ' + error)
+			console.log('video 1' + error)
 		}
 	}
 
@@ -287,14 +287,28 @@ class Video extends Component {
 			requestAnimationFrame(this.renderVideoResult)
 			return
 		}
-		const poses = await this.detector.estimatePoses(this.videoCanvas.video, {maxPoses: this.maxPoses, flipHorizontal: false})
-		posesForPauseVideo = poses
-		if (this.videoCanvas) {
-			this.videoCanvas.redrawCtx()
-			if (poses.length > 0) {
-				this.videoCanvas.drawResults(poses)
-			}
+		//new logic
+		const videoWidth = this.videoCanvas.video.videoWidth
+		const videoHeight = this.videoCanvas.video.videoHeight
+		if (videoWidth === 0 || videoHeight === 0) {
+			console.error(`Invalid video dimensions: ${videoWidth}x${videoHeight}`)
+			requestAnimationFrame(this.renderVideoResult) // Keep trying until valid video dimensions are available
+			return
 		}
+		try {
+			//try catch new logic
+			const poses = await this.detector.estimatePoses(this.videoCanvas.video, {maxPoses: this.maxPoses, flipHorizontal: false})
+			posesForPauseVideo = poses
+			if (this.videoCanvas) {
+				this.videoCanvas.redrawCtx()
+				if (poses.length > 0) {
+					this.videoCanvas.drawResults(poses)
+				}
+			}
+		} catch (error) {
+			console.error('Error estimating poses:', error)
+		}
+		// Request the next frame for rendering
 		requestAnimationFrame(this.renderVideoResult)
 		// this.endEstimatePosesStats()
 	}
@@ -397,7 +411,12 @@ class Video extends Component {
 	}
 
 	canUserAddExample = () => {
-		return this.videoCanvas.mediaRecorder.state === 'recording' ? true : false
+		if (this.videoCanvas.mediaRecorder.state !== 'recording') {
+			alert('Please play video first')
+			return false
+		} else {
+			return this.videoCanvas.mediaRecorder.state === 'recording' ? true : false
+		}
 	}
 
 	render() {
